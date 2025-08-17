@@ -1,0 +1,23 @@
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  padding: 8px 0;
+  /* Tổng padding 16px, phù hợp với height 40px */
+  background: #f7f9fc;
+  color: #6a7384;
+  font-size: 0.97rem;
+  font-style: italic;
+  border-top: 1px solid #e1e5f0;
+  z-index: 10;
+  box-sizing: border-box;
+  /* Bao gồm padding trong height */
+  height: 40px;
+  /* Chiều cao cố định 40px */
+  line-height: 24px;
+  /* Căn giữa văn bản */
+  min-height: 40px;
+  /* Đảm bảo không bị co nhỏ */
+}

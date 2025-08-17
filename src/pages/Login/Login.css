@@ -1,0 +1,116 @@
+/* src/pages/Login/Login.css */
+
+/* Ensure body has no scrollbars */
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/*Phần Header của Trang*/
+.login-header {
+  position: absolute;
+  top: 24px;
+  left: 36px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+}
+
+/*Logo*/
+.login-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+/*Tên thương hiệu*/
+.login-title-brand {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #2050aa;
+  letter-spacing: 1px;
+}
+
+/*Container chính của Trang đăng nhập*/
+.login-root {
+  height: 100vh;
+  width: 100vw;
+  background: #f5f6fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden; /* Prevent any overflow */
+}
+
+/*Card đăng nhập*/
+.login-card {
+  background: #fff;
+  padding: 2.5rem 2.5rem;
+  border-radius: 18px;
+  box-shadow: 0 6px 32px 0 rgba(60, 72, 88, 0.09);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 450px; /* Increased width from 350px */
+  max-width: 90vw; /* Ensure responsiveness on smaller screens */
+  box-sizing: border-box;
+}
+
+/*Tiêu đề trang đăng nhập*/
+.login-title {
+  font-size: 1.8rem; /* Slightly reduced from 2rem for better fit */
+  font-weight: bold;
+  margin-bottom: 1.2rem;
+  color: #184081;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+/*Mô tả đăng nhập*/
+.login-desc {
+  color: #888;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/*Thông báo lỗi */
+.login-error {
+  background: #ffe5e5;
+  color: #b90019;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  width: 100%;
+  text-align: center;
+  font-size: 0.98rem;
+}
+
+/*Trạng thái loading*/
+.login-loading {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/*Footer - thành phần bên dưới web*/
+.login-footer {
+  margin-top: 2.5rem;
+  color: #b0b5b8;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 480px) {
+  .login-card {
+    width: 90vw; /* Use full width on small screens */
+    padding: 2rem 1.5rem;
+  }
+  .login-title {
+    font-size: 1.6rem; /* Further reduce font size for small screens */
+  }
+}
