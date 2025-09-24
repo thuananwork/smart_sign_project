@@ -1,153 +1,128 @@
-// src/pages/SignaturePage/CanvasSignature.tsx
-import {
-    forwardRef,
-    useEffect,
-    useImperativeHandle,
-    useLayoutEffect,
-    useRef,
-} from "react";
+import React, { useEffect, useImperativeHandle, useLayoutEffect, useRef } from "react";
 
-/** Public APIs để SignaturePage gọi */
-export type CanvasSignatureHandle = {
-    toDataURL: () => string | null;
-    clear: () => void;
-};
-
-interface Props {
-    width?: number;        // bề rộng hiển thị (CSS px)
-    height?: number;       // bề cao hiển thị (CSS px)
-    lineWidth?: number;
-    strokeStyle?: string;
-    onSave?: (dataUrl: string) => void; // callback sau mỗi lần nhả bút
+export interface CanvasSignatureHandle {
+  clear: () => void;
+  toDataURL: () => string | null;
 }
 
-const CanvasSignature = forwardRef<CanvasSignatureHandle, Props>(
-    (
-        {
-            width = 560,
-            height = 240,
-            lineWidth = 2,
-            strokeStyle = "#000",
-            onSave,
-        },
-        ref
-    ) => {
-        const canvasRef = useRef<HTMLCanvasElement>(null);
-        const drawingRef = useRef(false);
-        const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+interface CanvasSignatureProps {
+  onSave?: (dataUrl: string) => void;
+  width?: number;      // CSS px
+  height?: number;     // CSS px
+  strokeStyle?: string;
+  lineWidth?: number;  // theo CSS px
+}
 
-        useImperativeHandle(
-            ref,
-            () => ({
-                toDataURL: () => canvasRef.current?.toDataURL() ?? null,
-                clear: () => {
-                    const c = canvasRef.current;
-                    const ctx = ctxRef.current;
-                    if (!c || !ctx) return;
-                    ctx.clearRect(0, 0, c.width, c.height);
-                    onSave?.(c.toDataURL());
-                },
-            }),
-            [onSave]
-        );
+const CanvasSignature = React.forwardRef<CanvasSignatureHandle, CanvasSignatureProps>(
+  ({ onSave, width = 560, height = 240, strokeStyle = "#000000", lineWidth = 2 }, ref) => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const isDrawing = useRef(false);
 
-        // Set up kích thước thực (pixel) theo DPR và scale context
-        useLayoutEffect(() => {
-            const c = canvasRef.current;
-            if (!c) return;
+    useImperativeHandle(ref, () => ({
+      clear() {
+        const c = canvasRef.current;
+        const ctx = c?.getContext("2d");
+        if (c && ctx) ctx.clearRect(0, 0, c.width, c.height);
+      },
+      toDataURL() {
+        const c = canvasRef.current;
+        return c ? c.toDataURL("image/png") : null;
+      },
+    }));
 
-            // Kích thước hiển thị (CSS px)
-            c.style.width = `${width}px`;
-            c.style.height = `${height}px`;
+    // ✅ Render ở độ phân giải cao (DPR * OVERSAMPLE) để luôn nét
+    useLayoutEffect(() => {
+      const c = canvasRef.current;
+      if (!c) return;
 
-            // Kích thước pixel thực theo DPR
-            const dpr = window.devicePixelRatio || 1;
-            c.width = Math.round(width * dpr);
-            c.height = Math.round(height * dpr);
+      const DPR = window.devicePixelRatio || 1;
+      const OVERSAMPLE = 3;                       // << bạn có thể nâng lên 4 nếu muốn nét hơn
+      const scale = DPR * OVERSAMPLE;
 
-            const ctx = c.getContext("2d");
-            if (!ctx) return;
+      // kích thước hiển thị (CSS px — KHÔNG đổi)
+      c.style.width = `${width}px`;
+      c.style.height = `${height}px`;
 
-            // Reset & scale theo DPR để vẽ bằng CSS pixel
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.scale(dpr, dpr);
-            ctx.lineWidth = lineWidth;
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
-            ctx.strokeStyle = strokeStyle;
+      // kích thước bitmap thật (device px — RẤT LỚN)
+      c.width  = Math.round(width  * scale);
+      c.height = Math.round(height * scale);
 
-            ctxRef.current = ctx;
+      const ctx = c.getContext("2d");
+      if (!ctx) return;
 
-            // Ngăn trang cuộn khi ký trên mobile
-            c.style.touchAction = "none";
-        }, [width, height, lineWidth, strokeStyle]);
+      // Scale context để vẽ theo đơn vị CSS px
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(scale, scale);
 
-        useEffect(() => {
-            const c = canvasRef.current;
-            const ctx = ctxRef.current;
-            if (!c || !ctx) return;
+      ctx.lineWidth = lineWidth;                  // lineWidth giữ theo CSS px
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = strokeStyle;
 
-            const getPos = (e: PointerEvent) => {
-                const rect = c.getBoundingClientRect();
-                // Vì đã scale context theo DPR, tọa độ CSS pixel là chính xác
-                return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-            };
+      // làm mượt khi có image draw lại
+      (ctx as any).imageSmoothingEnabled = true;
+      (ctx as any).imageSmoothingQuality = "high";
 
-            const down = (e: PointerEvent) => {
-                e.preventDefault();
-                c.setPointerCapture(e.pointerId);
-                drawingRef.current = true;
-                const { x, y } = getPos(e);
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-            };
-            const move = (e: PointerEvent) => {
-                if (!drawingRef.current) return;
-                const { x, y } = getPos(e);
-                ctx.lineTo(x, y);
-                ctx.stroke();
-            };
-            const up = (e: PointerEvent) => {
-                if (!drawingRef.current) return;
-                drawingRef.current = false;
-                try {
-                    c.releasePointerCapture(e.pointerId);
-                } catch { }
-                onSave?.(c.toDataURL());
-            };
-            const leave = () => {
-                drawingRef.current = false;
-            };
+      (c.style as any).touchAction = "none";
+    }, [width, height, lineWidth, strokeStyle]);
 
-            c.addEventListener("pointerdown", down);
-            c.addEventListener("pointermove", move);
-            c.addEventListener("pointerup", up);
-            c.addEventListener("pointerleave", leave);
-            c.addEventListener("pointercancel", leave);
+    useEffect(() => {
+      const c = canvasRef.current!;
+      const ctx = c.getContext("2d")!;
+      const rect = () => c.getBoundingClientRect();
+      const pos = (e: PointerEvent) => ({ x: e.clientX - rect().left, y: e.clientY - rect().top });
 
-            return () => {
-                c.removeEventListener("pointerdown", down);
-                c.removeEventListener("pointermove", move);
-                c.removeEventListener("pointerup", up);
-                c.removeEventListener("pointerleave", leave);
-                c.removeEventListener("pointercancel", leave);
-            };
-        }, [onSave]);
+      const down = (e: PointerEvent) => {
+        e.preventDefault();
+        c.setPointerCapture(e.pointerId);
+        isDrawing.current = true;
+        const { x, y } = pos(e);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+      };
+      const move = (e: PointerEvent) => {
+        if (!isDrawing.current) return;
+        const { x, y } = pos(e);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      };
+      const up = (e: PointerEvent) => {
+        if (!isDrawing.current) return;
+        isDrawing.current = false;
+        try { c.releasePointerCapture(e.pointerId); } catch {}
+        onSave?.(c.toDataURL("image/png"));
+      };
 
-        return (
-            <div
-                className="canvas-wrap"
-                style={{
-                    background: "#fff",
-                    border: "1px solid #e7ecf7",
-                    borderRadius: 12,
-                    padding: 8,
-                }}
-            >
-                <canvas ref={canvasRef} />
-            </div>
-        );
-    }
+      c.addEventListener("pointerdown", down);
+      c.addEventListener("pointermove", move);
+      c.addEventListener("pointerup", up);
+      c.addEventListener("pointerleave", up);
+      c.addEventListener("pointercancel", up);
+      return () => {
+        c.removeEventListener("pointerdown", down);
+        c.removeEventListener("pointermove", move);
+        c.removeEventListener("pointerup", up);
+        c.removeEventListener("pointerleave", up);
+        c.removeEventListener("pointercancel", up);
+      };
+    }, [onSave]);
+
+    return (
+      <div style={{ width: "100%" }}>
+        <canvas
+          ref={canvasRef}
+          style={{
+            display: "block",
+            border: "1px solid #e2e8f6",
+            borderRadius: 10,
+            background: "#fff",
+            margin: "0 auto",
+          }}
+        />
+      </div>
+    );
+  }
 );
 
+CanvasSignature.displayName = "CanvasSignature";
 export default CanvasSignature;
