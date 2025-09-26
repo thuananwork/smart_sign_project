@@ -1,8 +1,10 @@
 import React from "react";
 import "./Profile.css";
 import avatar from "../../assets/images/avatar-hao.png";
+import { useNavigate } from "react-router-dom";
 
 const Profile: React.FC = () => {
+    const navigate = useNavigate();
     const [isEditing, setIsEditing] = React.useState(false);
     const [profile, setProfile] = React.useState({
         userName: "kienhao2209",
@@ -168,7 +170,7 @@ const Profile: React.FC = () => {
                     <button
                         type="button"
                         className="profile__btn profile__close"
-                        onClick={() => setIsEditing(false)}
+                        onClick={() => navigate("/dashboard")}
                     >
                         Đóng
                     </button>
