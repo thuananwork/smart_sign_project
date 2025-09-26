@@ -11,6 +11,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ userName, avatarUrl, onLogout }) => {
     const [showMenu, setShowMenu] = React.useState(false);
+    const [showProfile, setShowProfile] = React.useState(false);
     const currentPath = window.location.pathname;
     const menuRef = React.useRef<HTMLDivElement>(null);
 
@@ -75,9 +76,13 @@ const Header: React.FC<HeaderProps> = ({ userName, avatarUrl, onLogout }) => {
                 </button>
                 {showMenu && (
                     <div className="header__menu">
-                        <a href="#" className="header__menu-item">
+                        <NavLink
+                            to="/profile"
+                            className="header__menu-item"
+                            onClick={() => setShowMenu(false)}
+                        >
                             Hồ sơ
-                        </a>
+                        </NavLink>
                         <button
                             className="header__menu-item"
                             onClick={onLogout}
@@ -87,6 +92,34 @@ const Header: React.FC<HeaderProps> = ({ userName, avatarUrl, onLogout }) => {
                     </div>
                 )}
             </div>
+
+            {/* Profile Modal */}
+            {showProfile && (
+                <div
+                    className="profile-modal-overlay"
+                    onClick={() => setShowProfile(false)}
+                >
+                    <div
+                        className="profile-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            className="profile-modal__close"
+                            onClick={() => setShowProfile(false)}
+                        >
+                            ×
+                        </button>
+                        <img
+                            src={avatarUrl || "/default-avatar.png"}
+                            alt="avatar"
+                            className="profile-modal__avatar"
+                        />
+                        <h2>{userName || "User"}</h2>
+                        {/* Add more user details here */}
+                        <p>Email: user@email.com</p>
+                    </div>
+                </div>
+            )}
         </header>
     );
 };
