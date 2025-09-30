@@ -311,8 +311,8 @@ const Profile: React.FC = () => {
                     <div className="avatar__modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="avatar__modal-header">
                             <h2 className="avatar__modal-name">{profile.fullName}</h2>
-                            <button className="avatar__modal-btn" onClick={() => setShowAvatarModal(false)}>
-                                <span className="avatar__modal-btn--close">&times;</span>
+                            <button className="avatar__modal-btn" onClick={() => setShowAvatarModal(false)}>\
+                                <i className="fa-solid fa-xmark avatar__modal-btn--close"></i>
                             </button>
                         </div>
                         

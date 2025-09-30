@@ -22,7 +22,7 @@ const FileUpload: React.FC<Props> = ({ onUpload }) => {
                 onUpload(file.name, fileUrl);
                 setIsUploading(false);
                 e.target.value = ""; // Reset input
-            }, 1000); // Giả lập thời gian tải
+            }, 1000);
         }
     };
 
@@ -33,7 +33,7 @@ const FileUpload: React.FC<Props> = ({ onUpload }) => {
                 onClick={() => inputRef.current?.click()}
                 disabled={isUploading}
             >
-                {isUploading ? "Đang tải..." : "+ Chọn file PDF"}
+                {isUploading ? "Đang tải..." : "+ Chọn tệp PDF"}
             </button>
             <input
                 type="file"

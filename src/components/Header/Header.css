@@ -21,17 +21,17 @@
 }
 
 .header__nav {
-    margin-left: auto;
     display: flex;
+    margin-left: auto;
     align-items: center;
     gap: 24px;
-    box-sizing: border-box;
 }
 
 .header__link {
     color: #2d384b;
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 1.5rem;
+    font-weight: 500;
     padding: 8px 12px;
     border-bottom: 2px solid transparent;
     transition: color 0.17s, border-bottom 0.17s;
@@ -53,7 +53,7 @@
     align-items: center;
     border: none;
     cursor: pointer;
-    gap: 8px;
+    gap: 12px;
     padding: 9px 15px;
     border-radius: 999px;
     transition: 0.25s;
@@ -78,19 +78,20 @@
 }
 
 .header__username {
-    font-size: 1rem;
+    font-size: 1.5rem;
     color: #2050aa;
     font-weight: 500;
 }
 
 .header__menu {
     position: absolute;
-    top: 120%;
+    width: 200px;
+    top: 115%;
     right: 0;
+    border-radius: 10px;
+    overflow: hidden;
     background: #fff;
     box-shadow: 0 2px 16px #cfd7e7;
-    border-radius: 10px;
-    width: 200px;
 }
 
 .header__menu-item {
@@ -100,7 +101,7 @@
     padding: 11px 20px;
     background: none;
     border: none;
-    font-size: 1.03rem;
+    font-size: 1.5rem;
     color: #184081;
     cursor: pointer;
     transition: 0.25s;

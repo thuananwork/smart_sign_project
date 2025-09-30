@@ -10,9 +10,6 @@ interface Props {
 const StatusFilter: React.FC<Props> = ({ value, onChange }) => {
     return (
         <div className="status-filter">
-            <label htmlFor="status-filter" className="status-filter-label">
-                Lọc theo trạng thái:
-            </label>
             <div className="status-filter-wrapper">
                 <select
                     id="status-filter"

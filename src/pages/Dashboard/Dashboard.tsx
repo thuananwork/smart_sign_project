@@ -4,6 +4,7 @@ import DocumentList from "./DocumentList";
 import StatusFilter from "./StatusFilter";
 import Header from "../../components/Header/Header";
 import BottomBar from "../../components/Footer/BottomBar/BottomBar";
+import SortByDateSelect from "./SortByDateSelect";
 import "./Dashboard.css";
 import "../../styles/Background.css";
 
@@ -108,6 +109,15 @@ const Dashboard: React.FC = () => {
     const userName = "Nguyễn Thuận An";
     const avatarUrl = "https://randomuser.me/api/portraits/men/34.jpg";
 
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+    const sortedDocs = React.useMemo(() => {
+        return [...filteredDocs].sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+        });
+    }, [filteredDocs, sortOrder]);
+
     return (
         <div className="background-root">
             <Header
@@ -115,14 +125,18 @@ const Dashboard: React.FC = () => {
                 avatarUrl={avatarUrl}
                 onLogout={() => (window.location.href = "/")}
             />
-            <div className="dashboard-root">
-                <h1 className="dashboard-title">Quản lý hợp đồng</h1>
-                <div className="dashboard-controls">
+            <div className="dashboard__root">
+                <h1 className="dashboard__heading">QUẢN LÝ HỢP ĐỒNG</h1>
+                <div className="dashboard__controls">
                     <FileUpload onUpload={handleUpload} />
+                    <SortByDateSelect
+                        value={sortOrder}
+                        onChange={setSortOrder}
+                    />
                     <StatusFilter value={filter} onChange={setFilter} />
                 </div>
                 <DocumentList
-                    documents={filteredDocs}
+                    documents={sortedDocs}
                     setDocuments={setDocuments}
                 />
                 <BottomBar />
