@@ -79,11 +79,10 @@
     position: absolute;
     right: 9px;
     bottom: 5px;
-    width: 3.6em;
-    height: 3.6em;
+    width: 34px;
+    height: 34px;
     background: #e2e5e9;
     border-radius: 50%;
-    font-size: 0.6rem;
     z-index: 1;
 }
 
@@ -93,8 +92,7 @@
 
 .profile__camera-icon {
     color: #1d1f23;
-    width: 2.4em;
-    height: 2.4em;
+    font-size: 16px;
 }
 
 .profile-menu {
@@ -121,6 +119,7 @@
 
 .profile-menu__btn {
     display: flex;
+    align-items: center;
     column-gap: 12px;
     outline: none;
     border: none;
@@ -137,8 +136,7 @@
 }
 
 .profile-menu__icon {
-    width: 20px;
-    height: 20px;
+    margin-top: 2px;
 }
 
 .profile__name {
@@ -233,4 +231,93 @@
 .profile__close {
     margin-left: 15px;
     background: #939292;
+}
+
+/* Model View Avatar */
+.avatar__modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); 
+    z-index: 3;
+}
+
+.avatar__modal-content {
+    min-width: 80%;
+    border-radius: 8px;
+    text-align: center;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    background: #fff;
+}
+
+.avatar__modal-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 45px;
+    background: #DFDFDF;
+}
+
+.avatar__modal-name {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+}
+
+.avatar__modal-btn,
+.avatar__modal-btn:focus,
+.avatar__modal-btn:active {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.avatar__modal-btn {
+    height: 100%;
+    margin-left: auto;
+    padding: 0 20px;
+    border-radius: 0;
+    font-size: 40px;
+    color: #fff;
+    background: transparent;
+}
+
+.avatar__modal-btn:hover {
+    background: #f00403;
+}
+
+.avatar__modal-btn:active {
+    background: #c80404;
+}
+
+.avatar__modal-btn--close {
+    position: relative;
+    top: -9px;
+    height: 40px;
+    display: inline-block;
+}
+
+.avatar__modal-background {
+    background: #000;
+    overflow: hidden;
+}
+
+.avatar__modal-images {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 400px;
+    height: 440px;
+    margin: 0 auto;
+    overflow: hidden;
 }

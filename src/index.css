@@ -1,78 +1,26 @@
-/* src/index.css */
-
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  --primary-color: #213547;
+}
 
-  /* ✅ Mặc định sáng */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
   color-scheme: light;
-  color: #213547;
-  background-color: #ffffff;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  font-size: 1.6rem;
+}
+
 a {
-  font-weight: 500;
-  color: #646cff;
   text-decoration: none;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-html,
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  box-sizing: border-box;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
-}
-
-/* Để gradient trong Background.css hiển thị đúng */
-body {
-  background: transparent;
-  color: inherit;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid #d0d7e1;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #f9f9f9;
-  /* ✅ nền sáng mặc định */
-  color: inherit;
-  cursor: pointer;
-  transition: border-color 0.25s, box-shadow 0.25s;
-}
-
-button:hover {
-  border-color: #2050aa;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-  box-shadow: 0 0 0 3px rgba(32, 80, 170, 0.15);
 }
 
 /* 🌙 Chỉ bật dark khi hệ thống người dùng ở dark mode */
