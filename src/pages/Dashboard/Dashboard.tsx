@@ -7,6 +7,7 @@ import BottomBar from "../../components/Footer/BottomBar/BottomBar";
 import SortByDateSelect from "./SortByDateSelect";
 import "./Dashboard.css";
 import "../../styles/Background.css";
+import SearchPdfInput from "./SearchPdfInput";
 
 export type DocumentStatus = "Chờ ký" | "Đã ký";
 
@@ -16,7 +17,7 @@ export interface DocumentItem {
     createdAt: string;
     status: DocumentStatus;
     signer: string;
-    fileUrl?: string; // Thêm fileUrl để lưu URL tạm thời của file
+    fileUrl?: string;
 }
 
 export const mockDocuments: DocumentItem[] = [
@@ -88,11 +89,22 @@ export const mockDocuments: DocumentItem[] = [
 const Dashboard: React.FC = () => {
     const [documents, setDocuments] = useState<DocumentItem[]>(mockDocuments);
     const [filter, setFilter] = useState<DocumentStatus | "Tất cả">("Tất cả");
-
+    const [search, setSearch] = useState("");
     const filteredDocs =
         filter === "Tất cả"
             ? documents
             : documents.filter((doc) => doc.status === filter);
+
+    function removeAccents(str: string) {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    const searchedDocs = filteredDocs.filter(
+        (doc) =>
+            removeAccents(doc.name.toLowerCase()).includes(
+                removeAccents(search.toLowerCase())
+            ) && doc.name.toLowerCase().endsWith(".pdf")
+    );
 
     const handleUpload = (name: string, fileUrl: string) => {
         const newDoc: DocumentItem = {
@@ -105,18 +117,16 @@ const Dashboard: React.FC = () => {
         };
         setDocuments([newDoc, ...documents]);
     };
-
     const userName = "Nguyễn Thuận An";
     const avatarUrl = "https://randomuser.me/api/portraits/men/34.jpg";
-
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const sortedDocs = React.useMemo(() => {
-        return [...filteredDocs].sort((a, b) => {
+        return [...searchedDocs].sort((a, b) => {
             const dateA = new Date(a.createdAt).getTime();
             const dateB = new Date(b.createdAt).getTime();
             return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
         });
-    }, [filteredDocs, sortOrder]);
+    }, [searchedDocs, sortOrder]);
 
     return (
         <div className="background-root">
@@ -129,6 +139,7 @@ const Dashboard: React.FC = () => {
                 <h1 className="dashboard__heading">QUẢN LÝ HỢP ĐỒNG</h1>
                 <div className="dashboard__controls">
                     <FileUpload onUpload={handleUpload} />
+                    <SearchPdfInput value={search} onChange={setSearch} />
                     <SortByDateSelect
                         value={sortOrder}
                         onChange={setSortOrder}
