@@ -1,4 +1,3 @@
-// src/pages/Dashboard/DocumentList.tsx
 import React from "react";
 import type { DocumentItem } from "./Dashboard";
 import AssignSigner from "./AssignSigner";
