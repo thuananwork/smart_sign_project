@@ -106,6 +106,7 @@
     padding: 8px 0;
     cursor: default;
 }
+
 .profile-menu__item {
     display: flex;
     flex-direction: column;
@@ -119,12 +120,16 @@
 
 .profile-menu__btn {
     display: flex;
-    align-items: center;
-    column-gap: 12px;
     outline: none;
     border: none;
-    background: transparent;
     width: 100%;
+    cursor: pointer;
+    column-gap: 12px;
+    padding: 12px 8px;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    align-items: center;
+    background: transparent;
 }
 
 .profile-menu__btn:hover {
@@ -140,9 +145,11 @@
 }
 
 .profile__name {
-    width: 184px;
+    width: 210px;
     color: #fff;
     white-space: wrap;
+    text-align: center;
+    text-shadow: 1px 1px 5px #000;
 }
 
 .profile__content {
@@ -215,9 +222,13 @@
 }
 
 .profile__btn {
-    min-width: 110px;
     color: #fff;
+    cursor: pointer;
+    min-width: 110px;
     transition: 0.25s;
+    font-size: 1.5rem;
+    padding: 12px 20px;
+    border-radius: 8px;
 }
 
 .profile__btn:hover {
@@ -243,7 +254,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.5); 
+    background: rgba(0, 0, 0, 0.5);
     z-index: 3;
 }
 
@@ -283,12 +294,16 @@
 }
 
 .avatar__modal-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
     height: 100%;
     margin-left: auto;
     padding: 0 20px;
     border-radius: 0;
     font-size: 40px;
     color: #fff;
+    cursor: pointer;
     background: transparent;
 }
 
@@ -304,6 +319,7 @@
     position: relative;
     top: -9px;
     height: 40px;
+    font-size: 2rem;
     display: inline-block;
 }
 
@@ -320,4 +336,8 @@
     height: 440px;
     margin: 0 auto;
     overflow: hidden;
+}
+
+.avatar__modal-footer {
+    padding: 12px 0;
 }

@@ -87,7 +87,15 @@ export const mockDocuments: DocumentItem[] = [
 ];
 
 const Dashboard: React.FC = () => {
-    const [documents, setDocuments] = useState<DocumentItem[]>(mockDocuments);
+    const [documents, setDocuments] = useState<DocumentItem[]>(() => {
+        const saved = localStorage.getItem("documents");
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    React.useEffect(() => {
+        localStorage.setItem("documents", JSON.stringify(documents));
+    }, [documents]);
+
     const [filter, setFilter] = useState<DocumentStatus | "Tất cả">("Tất cả");
     const [search, setSearch] = useState("");
     const filteredDocs =
@@ -117,8 +125,8 @@ const Dashboard: React.FC = () => {
         };
         setDocuments([newDoc, ...documents]);
     };
-    const userName = "Nguyễn Thuận An";
-    const avatarUrl = "https://randomuser.me/api/portraits/men/34.jpg";
+    const userName = "Huỳnh Kiến Hào";
+    const avatarUrl = localStorage.getItem("profileAvatarUrl") || undefined;
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const sortedDocs = React.useMemo(() => {
         return [...searchedDocs].sort((a, b) => {

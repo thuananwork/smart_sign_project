@@ -90,7 +90,7 @@
     position: relative;
     display: flex;
     align-items: center;
-    
+
 }
 
 .status-filter-label {
@@ -283,6 +283,7 @@
 }
 
 @media (max-width: 900px) {
+
     .table__content,
     .file-upload,
     .dashboard-controls {
@@ -314,61 +315,6 @@
     font-weight: bold;
 }
 
-.dashboard-welcome p {
-    color: #6181b6;
-    font-size: 1.04rem;
-    margin-bottom: 12px;
-}
-
-/* src/pages/Dashboard/DocumentActions.css */
-.confirm-popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(50, 60, 75, 0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 300;
-}
-
-.confirm-popup-content {
-    background: #fff;
-    padding: 24px 28px;
-    border-radius: 12px;
-    box-shadow: 0 6px 32px rgba(32, 80, 170, 0.18);
-    min-width: 240px;
-    max-width: 94vw;
-    text-align: center;
-}
-
-.confirm-popup-content p {
-    font-size: 1.09rem;
-    margin-bottom: 18px;
-    color: #213547;
-}
-
-.confirm-popup-content button {
-    padding: 7px 16px;
-    border-radius: 6px;
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    margin: 0 6px;
-}
-
-.confirm-popup-content button:last-child {
-    background: #f1f5fb;
-    color: #1d2946;
-}
-
-.confirm-popup-content button:first-child {
-    background: #c82f2f;
-    color: #fff;
-}
-
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -382,6 +328,7 @@
 }
 
 @media (max-width: 600px) {
+
     .table__heading,
     .table__data {
         padding: 8px 2px;

@@ -1,13 +1,16 @@
-/* src/pages/Dashboard/DocumentActions.css */
 .confirm-popup {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(50,60,75,0.15);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(50, 60, 75, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 300;
 }
+
 .confirm-popup-content {
   background: #fff;
   padding: 24px 28px;
@@ -17,48 +20,57 @@
   max-width: 94vw;
   text-align: center;
 }
-.confirm-popup-content p {
-  font-size: 1.09rem;
+
+.confirm-popup-text {
+  font-size: 1.6rem;
   margin-bottom: 18px;
   color: #213547;
 }
-.confirm-popup-content button {
+
+.confirm-popup-btn {
   padding: 7px 16px;
   border-radius: 6px;
   border: none;
-  font-size: 1rem;
+  font-size: 1.7rem;
   cursor: pointer;
   margin: 0 6px;
 }
-.confirm-popup-content button:last-child {
-  background: #f1f5fb;
-  color: #1d2946;
-}
-.confirm-popup-content button:first-child {
-  background: #c82f2f;
-  color: #fff;
-}
-.doc-actions {
-  display: flex;
-  gap: 12px;
+
+.confirm-popup-cancel-btn {
+  background: #d5d5d5;
+  color: #333;
 }
 
+.confirm-popup-cancel-btn:hover {
+  background: #b5b3b3;
+}
+
+.confirm-popup-confirm-btn {
+  background: #fb2525;
+  color: #fff;
+}
+
+.confirm-popup-confirm-btn:hover {
+  background: #d21f1f;
+}
+
+/* Document Action */
 .doc-action-btn {
-  background: none;
   border: none;
-  cursor: pointer;
   padding: 6px;
   display: flex;
+  cursor: pointer;
+  font-size: 20px;
+  background: none;
+  transition: .25s;
+  border-radius: 6px;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  transition: transform 0.2s ease, background 0.2s;
-  border-radius: 6px;
 }
 
 .doc-action-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
   transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .doc-action-btn svg {
