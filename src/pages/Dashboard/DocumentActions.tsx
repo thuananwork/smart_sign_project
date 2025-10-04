@@ -31,9 +31,11 @@ const DocumentActions: React.FC<Props> = ({ document: doc, onDelete }) => {
     useEffect(() => {
         if (!showMenu) return;
         const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;
             if (
                 menuRef.current &&
-                !menuRef.current.contains(event.target as Node)
+                !menuRef.current.contains(target) &&
+                !(target as HTMLElement).closest(".doc-action-btn")
             ) {
                 setShowMenu(false);
             }
@@ -45,6 +47,7 @@ const DocumentActions: React.FC<Props> = ({ document: doc, onDelete }) => {
     }, [showMenu]);
 
     const handleView = () => {
+        setShowMenu(false);
         if (doc.fileUrl) {
             setShowPreview(true);
         } else {
@@ -53,6 +56,7 @@ const DocumentActions: React.FC<Props> = ({ document: doc, onDelete }) => {
     };
 
     const handleDownload = () => {
+        setShowMenu(false);
         if (doc.fileUrl) {
             const link = window.document.createElement("a");
             link.href = doc.fileUrl;
@@ -63,7 +67,10 @@ const DocumentActions: React.FC<Props> = ({ document: doc, onDelete }) => {
         }
     };
 
-    const handleDelete = () => setShowConfirm(true);
+    const handleDelete = () => {
+        setShowMenu(false);
+        setShowConfirm(true);
+    };
 
     const confirmDelete = () => {
         setShowConfirm(false);
@@ -77,6 +84,10 @@ const DocumentActions: React.FC<Props> = ({ document: doc, onDelete }) => {
     };
 
     const handleMenuOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (showMenu) {
+            setShowMenu(false);
+            return;
+        }
         const rect = e.currentTarget.getBoundingClientRect();
         setMenuPosition({
             top: rect.bottom + window.scrollY,
@@ -91,7 +102,6 @@ const DocumentActions: React.FC<Props> = ({ document: doc, onDelete }) => {
                 className="doc-action-btn"
                 title="Tùy chọn"
                 onClick={handleMenuOpen}
-                style={{ fontSize: 22 }}
             >
                 <FiMoreVertical />
             </button>
@@ -102,62 +112,27 @@ const DocumentActions: React.FC<Props> = ({ document: doc, onDelete }) => {
                         className="doc-actions-menu"
                         ref={menuRef}
                         style={{
-                            position: "fixed",
                             top: menuPosition.top,
                             left: menuPosition.left,
-                            background: "#fff",
-                            boxShadow: "0 2px 12px rgba(32,80,170,0.12)",
-                            borderRadius: 8,
-                            minWidth: 140,
-                            zIndex: 1000,
-                            padding: "8px 0",
                         }}
                     >
                         <button
                             className="doc-actions-menu-item"
                             onClick={handleView}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                width: "100%",
-                                padding: "8px 16px",
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                            }}
                         >
-                            <LuEye style={{ marginRight: 8 }} /> Xem tài liệu
+                            <LuEye /> Xem tài liệu
                         </button>
                         <button
                             className="doc-actions-menu-item"
                             onClick={handleDownload}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                width: "100%",
-                                padding: "8px 16px",
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                            }}
                         >
-                            <LuDownload style={{ marginRight: 8 }} /> Tải về
+                            <LuDownload /> Tải về
                         </button>
                         <button
                             className="doc-actions-menu-item"
                             onClick={handleDelete}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                width: "100%",
-                                padding: "8px 16px",
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                                color: "#c82f2f",
-                            }}
                         >
-                            <LuTrash2 style={{ marginRight: 8 }} /> Xóa
+                            <LuTrash2 /> Xóa
                         </button>
                     </div>,
                     document.body
