@@ -32,16 +32,11 @@ const SIG_WORK_H = 420; // px
 
 export default function SignaturePage() {
     const [sigTab, setSigTab] = useState<"draw" | "upload">("draw");
-
     const [sigSelected, setSigSelected] = useState(false);
-
     const uploadInputRef = useRef<HTMLInputElement>(null);
     const [uploadPreview, setUploadPreview] = useState<string | null>(null);
-
     const DEFAULT_SIG_W = 220;
-
     const [file, setFile] = useState<PreviewFile | null>(null);
-
     const [selectedSignature, setSelectedSignature] = useState<string | null>(
         null
     );
@@ -49,30 +44,21 @@ export default function SignaturePage() {
         localStorage.getItem("savedSignature") || null
     );
     const [showOnDocument, setShowOnDocument] = useState<boolean>(false);
-
     const [drawColor, setDrawColor] = useState<string>("#000000");
     const [drawLineWidth, setDrawLineWidth] = useState<number>(2);
-
     const [saving, setSaving] = useState(false);
-
     const sigRef = useRef<CanvasSignatureHandle>(null);
-
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
     const [openPanel, setOpenPanel] = useState<Panel>(null);
-
     const viewerAreaRef = useRef<HTMLDivElement>(null);
     const docWrapRef = useRef<HTMLDivElement>(null);
     const sigImgRef = useRef<HTMLImageElement>(null);
-
     const [sigPos, setSigPos] = useState({ x: 100, y: 100 });
     const [sigWidth, setSigWidth] = useState(DEFAULT_SIG_W);
     const [sigAspect, setSigAspect] = useState(SIG_WORK_W / SIG_WORK_H);
-
     const natSizeRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
-
     const [dragging, setDragging] = useState(false);
     const dragOffset = useRef({ dx: 0, dy: 0 });
 
@@ -130,13 +116,36 @@ export default function SignaturePage() {
         return () => window.removeEventListener("keydown", onKey);
     }, [sigSelected, showOnDocument, selectedSignature, openPanel]);
 
-    // ===== Upload tài liệu =====
+    useEffect(() => {
+        const savedFile = localStorage.getItem("signaturePageFileMeta");
+        const savedBase64 = localStorage.getItem("signaturePageFileBase64");
+        if (savedFile && savedBase64) {
+            const { name, type } = JSON.parse(savedFile);
+            setFile({ url: savedBase64, name, type });
+        }
+    }, []);
+
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const f = event.target.files?.[0];
         if (!f) return;
-        if (file?.url) URL.revokeObjectURL(file.url);
-        const url = URL.createObjectURL(f);
-        setFile({ url, name: f.name, type: f.type });
+        const reader = new FileReader();
+        reader.onload = () => {
+            // Save base64 string to localStorage
+            localStorage.setItem(
+                "signaturePageFileBase64",
+                reader.result as string
+            );
+            localStorage.setItem(
+                "signaturePageFileMeta",
+                JSON.stringify({ name: f.name, type: f.type })
+            );
+            setFile({
+                url: reader.result as string,
+                name: f.name,
+                type: f.type,
+            });
+        };
+        reader.readAsDataURL(f); // This creates a base64 data URL
         event.target.value = "";
     };
 
