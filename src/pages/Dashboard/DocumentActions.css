@@ -60,7 +60,6 @@
   padding: 6px;
   display: flex;
   cursor: pointer;
-  font-size: 20px;
   background: none;
   transition: .25s;
   border-radius: 6px;
@@ -69,11 +68,43 @@
 }
 
 .doc-action-btn:hover {
-  transform: scale(1.1);
   background: rgba(0, 0, 0, 0.05);
 }
 
 .doc-action-btn svg {
   width: 20px;
   height: 20px;
+}
+
+.doc-actions-menu {
+  position: fixed;
+  min-width: 140px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(32, 80, 170, 0.12);
+}
+
+.doc-actions-menu-item {
+  min-width: 170px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  gap: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.doc-actions-menu-item:last-child {
+  color: #c82f2f;
+}
+
+.doc-actions-menu-item:hover {
+  background: #f2f2f2;
 }
