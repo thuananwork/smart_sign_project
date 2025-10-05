@@ -92,6 +92,7 @@
     overflow: hidden;
     background: #fff;
     box-shadow: 0 2px 16px #cfd7e7;
+    z-index: 1;
 }
 
 .header__menu-item {
@@ -128,6 +129,7 @@
     justify-content: center;
     z-index: 1000;
 }
+
 .profile-modal {
     background: #fff;
     padding: 2rem;
@@ -136,6 +138,7 @@
     position: relative;
     text-align: center;
 }
+
 .profile-modal__close {
     position: absolute;
     top: 8px;
@@ -145,6 +148,7 @@
     font-size: 1.5rem;
     cursor: pointer;
 }
+
 .profile-modal__avatar {
     width: 80px;
     height: 80px;

@@ -238,18 +238,19 @@
 
 /* Hero khi chưa có file */
 .upload-hero {
-  width: 100%;
-  max-width: 1100px;
-  margin: 24px auto;
-  background: linear-gradient(180deg, #f2f7ff, #f9fbff);
-  border: 2px dashed #bcd2ff;
-  border-radius: 14px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1100px;
+  min-height: 60vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
+  border-radius: 14px;
   cursor: pointer;
-  position: relative;
+  border: 2px dashed #bcd2ff;
+  background: linear-gradient(180deg, #f2f7ff, #f9fbff);
 }
 
 .upload-hero-inner {
@@ -297,34 +298,36 @@
   border-radius: 12px;
   box-shadow: 0 4px 18px rgba(32, 80, 170, .06);
   padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* gap: 12px; */
   max-height: calc(100vh - 180px);
 }
 
 .rail-group {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 10px;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10px;
 }
 
 .rail-btn {
-  width: 44px;
-  height: 44px;
-  border: none;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
   border-radius: 10px;
-  background: #f5f7ff;
-  color: #1f3b7a;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 1.5rem;
+  border: none;
+  outline: none;
+  box-shadow: none;
   cursor: pointer;
+  color: #fff;
+  background: var(--primary-color);
 }
 
 .rail-btn:hover {
-  background: #eef3ff;
+  opacity: 0.9;
 }
 
 .rail-btn.active {
@@ -343,7 +346,8 @@
   flex: 1;
   overflow: auto;
   border-top: 1px solid #eef3ff;
-  padding-top: 10px;
+  margin-top: 20px;
+  max-height: 280px;
 }
 
 .thumb {
@@ -353,6 +357,13 @@
   background: linear-gradient(180deg, #f6f8ff, #fff);
   position: relative;
   margin-bottom: 10px;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .thumb-num {
@@ -635,27 +646,6 @@
   padding: 0 !important;
   line-height: 0;
   text-align: center;
-}
-
-.rail-group {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-.rail-btn {
-  display: grid !important;
-  place-items: center;
-  padding: 0 !important;
-  border: none !important;
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: #f5f7ff;
-  color: #1f3b7a;
-  line-height: 0;
 }
 
 .rail-btn svg,
