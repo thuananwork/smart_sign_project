@@ -1,4 +1,3 @@
-// src/pages/SignaturePage/SignaturePage.tsx
 import { useEffect, useRef, useState } from "react";
 import Header from "../../components/Header/Header";
 import BottomBar from "../../components/Footer/BottomBar/BottomBar";
@@ -7,14 +6,9 @@ import CanvasSignature from "./CanvasSignature";
 import type { CanvasSignatureHandle } from "./CanvasSignature";
 import SignatureTools from "./SignatureTools";
 import {
-    FiArrowLeft,
     FiDownload,
     FiCheck,
     FiUpload,
-    FiGrid,
-    FiEdit,
-    FiTool,
-    FiImage,
     FiX,
     FiFileText,
     FiSave,
@@ -22,13 +16,13 @@ import {
 } from "react-icons/fi";
 import "../../styles/Background.css";
 import "./SignaturePage.css";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 
 type PreviewFile = { url: string; name: string; type: string };
 type Panel = "draw" | "saved" | "tools" | null;
 
-/** Kích thước vùng làm việc (canvas & upload) — PHÓNG TO để không “nhỏ” như trước */
-const SIG_WORK_W = 820; // px
-const SIG_WORK_H = 420; // px
+const SIG_WORK_W = 820;
+const SIG_WORK_H = 420;
 
 export default function SignaturePage() {
     const [sigTab, setSigTab] = useState<"draw" | "upload">("draw");
@@ -61,6 +55,7 @@ export default function SignaturePage() {
     const natSizeRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
     const [dragging, setDragging] = useState(false);
     const dragOffset = useRef({ dx: 0, dy: 0 });
+    const [thumbnails, setThumbnails] = useState<string[]>([]);
 
     type Corner = "tl" | "tr" | "bl" | "br";
     const [resizing, setResizing] = useState<Corner | null>(null);
@@ -86,11 +81,66 @@ export default function SignaturePage() {
         return () => document.removeEventListener("click", onDocClick);
     }, []);
 
+    // Configure pdf.js worker (uses file in public/pdf.worker.min.js)
+    useEffect(() => {
+        try {
+            // Avoid resetting if already set
+            const currentSrc = (GlobalWorkerOptions as any)?.workerSrc;
+            if (!currentSrc)
+                (GlobalWorkerOptions as any).workerSrc = "/pdf.worker.min.js";
+        } catch {}
+    }, []);
+
     useEffect(() => {
         return () => {
             if (file?.url) URL.revokeObjectURL(file.url);
         };
     }, [file?.url]);
+
+    // Generate thumbnails for PDFs (demo)
+    useEffect(() => {
+        let cancelled = false;
+
+        const gen = async () => {
+            setThumbnails([]);
+            const isPdf =
+                !!file &&
+                (file.type?.toLowerCase().includes("pdf") ||
+                    file.name?.toLowerCase().endsWith(".pdf"));
+            if (!file || !isPdf) return;
+
+            try {
+                const loadingTask = getDocument(file.url as any);
+                const pdf = await loadingTask.promise;
+                const count = Math.min(pdf.numPages, 10); // demo: limit pages
+                const thumbs: string[] = [];
+                for (let i = 1; i <= count; i++) {
+                    if (cancelled) return;
+                    const page = await pdf.getPage(i);
+                    const viewport = page.getViewport({ scale: 1 });
+                    const desiredH = 130; // fits .thumb height ~140 with padding
+                    const scale = desiredH / viewport.height;
+                    const vp = page.getViewport({ scale });
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d")!;
+                    canvas.width = Math.ceil(vp.width);
+                    canvas.height = Math.ceil(vp.height);
+                    await page.render({ canvasContext: ctx, viewport: vp })
+                        .promise;
+                    if (cancelled) return;
+                    thumbs.push(canvas.toDataURL("image/png"));
+                }
+                if (!cancelled) setThumbnails(thumbs);
+            } catch (err) {
+                console.warn("Generate thumbnails error", err);
+            }
+        };
+
+        gen();
+        return () => {
+            cancelled = true;
+        };
+    }, [file]);
 
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
@@ -169,6 +219,19 @@ export default function SignaturePage() {
         a.href = file.url;
         a.download = file.name || "document";
         a.click();
+    };
+
+    const handleRestart = () => {
+        setFile(null);
+        setSelectedSignature(null);
+        setShowOnDocument(false);
+        setSigSelected(false);
+        setSavedSignature(null);
+        setUploadPreview(null);
+        setOpenPanel(null);
+        localStorage.removeItem("signaturePageFileBase64");
+        localStorage.removeItem("signaturePageFileMeta");
+        localStorage.removeItem("savedSignature");
     };
 
     // ===== Helpers (ảnh/chữ ký) =====
@@ -525,109 +588,51 @@ export default function SignaturePage() {
             />
 
             {/* TOP BAR */}
-            <div className="sign-topbar">
-                <button
-                    className="btn back-btn"
-                    onClick={() => window.history.back()}
-                    title="Quay lại"
-                >
-                    <FiArrowLeft />
-                    <span>Quay lại</span>
-                </button>
-
-                <div className="file-meta">
-                    <div className="file-name">
-                        {file ? file.name : "Chưa chọn tài liệu"}
-                    </div>
-                    {file && (
-                        <div className="file-cloud">Đã tải lên SmartSign</div>
-                    )}
-                </div>
-
-                <div className="topbar-actions">
-                    {!file && (
-                        <div className="btn-group" ref={dropdownRef}>
-                            <button
-                                className="btn primary"
-                                onClick={openFileDialog}
-                            >
-                                <FiUpload /> Tải lên
-                            </button>
-                            <button
-                                className="btn split"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setIsDropdownOpen((v) => !v);
-                                }}
-                                aria-haspopup="menu"
-                                aria-expanded={isDropdownOpen}
-                            >
-                                ▾
-                            </button>
-
-                            {isDropdownOpen && (
-                                <div
-                                    className="split-menu"
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <div
-                                        className="split-item"
-                                        onClick={() =>
-                                            handleSourceSelect("device")
-                                        }
-                                    >
-                                        From Device
-                                    </div>
-                                    <div
-                                        className="split-item"
-                                        onClick={() =>
-                                            handleSourceSelect("drive")
-                                        }
-                                    >
-                                        From Drive
-                                    </div>
-                                    <div
-                                        className="split-item"
-                                        onClick={() =>
-                                            handleSourceSelect("onedrive")
-                                        }
-                                    >
-                                        From Onedrive
-                                    </div>
-                                </div>
-                            )}
+            {file && (
+                <div className="sign-topbar">
+                    <div className="file-meta">
+                        <div className="file-name">
+                            {file.name || "Unnamed file"}
                         </div>
-                    )}
+                    </div>
 
-                    {file && (
-                        <>
-                            {selectedSignature && (
+                    <div className="topbar-actions">
+                        <button className="btn ghost" onClick={handleRestart}>
+                            <FiTrash2 /> Khởi động lại
+                        </button>
+
+                        {file && (
+                            <>
+                                {selectedSignature && (
+                                    <button
+                                        className="btn ghost"
+                                        onClick={handleSaveSignature}
+                                        disabled={saving}
+                                        title="Lưu chữ ký (PNG nền trong suốt) & tải về"
+                                    >
+                                        <FiSave />{" "}
+                                        {saving ? "Đang lưu..." : "Lưu chữ ký"}
+                                    </button>
+                                )}
                                 <button
                                     className="btn ghost"
-                                    onClick={handleSaveSignature}
-                                    disabled={saving}
-                                    title="Lưu chữ ký (PNG nền trong suốt) & tải về"
+                                    onClick={handleDownload}
                                 >
-                                    <FiSave />{" "}
-                                    {saving ? "Đang lưu..." : "Lưu chữ ký"}
+                                    <FiDownload /> Tải xuống
                                 </button>
-                            )}
-                            <button
-                                className="btn ghost"
-                                onClick={handleDownload}
-                            >
-                                <FiDownload /> Tải xuống
-                            </button>
-                            <button
-                                className="btn success"
-                                onClick={() => alert("Xác nhận & gửi (demo).")}
-                            >
-                                <FiCheck /> Hoàn thành
-                            </button>
-                        </>
-                    )}
+                                <button
+                                    className="btn success"
+                                    onClick={() =>
+                                        alert("Xác nhận & gửi (demo).")
+                                    }
+                                >
+                                    <FiCheck /> Hoàn thành
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* WORKSPACE */}
             {!file ? (
@@ -635,9 +640,7 @@ export default function SignaturePage() {
                     <div className="upload-hero-inner">
                         <div className="cloud-ico">☁️</div>
                         <div className="hero-title">Kéo thả file vào đây</div>
-                        <div className="hero-sub">
-                            Hỗ trợ PDF, ảnh (PNG/JPG), Word, Excel, PowerPoint
-                        </div>
+                        <div className="hero-sub">Chỉ hỗ trợ PDF</div>
                         <div className="btn primary hero-btn">
                             <FiUpload /> Chọn file
                         </div>
@@ -660,7 +663,6 @@ export default function SignaturePage() {
                                 className={`rail-btn ${
                                     openPanel === "draw" ? "active" : ""
                                 }`}
-                                title="Ký tay / Tải chữ ký"
                                 onClick={() => {
                                     setSigTab("draw");
                                     setOpenPanel(
@@ -668,7 +670,8 @@ export default function SignaturePage() {
                                     );
                                 }}
                             >
-                                <FiEdit />
+                                <i className="fa-solid fa-pen-to-square"></i>
+                                <span>Tạo chữ ký</span>
                             </button>
 
                             <button
@@ -682,7 +685,8 @@ export default function SignaturePage() {
                                     )
                                 }
                             >
-                                <FiImage />
+                                <i className="fa-solid fa-image"></i>
+                                <span>Chữ ký đã lưu</span>
                             </button>
 
                             <button
@@ -696,34 +700,61 @@ export default function SignaturePage() {
                                     )
                                 }
                             >
-                                <FiTool />
+                                <i className="fa-solid fa-screwdriver-wrench"></i>
+                                <span>Công cụ</span>
                             </button>
 
                             <button
                                 className="rail-btn"
                                 title="Nền / Lưới căn chỉnh"
                             >
-                                <FiGrid />
+                                <i className="fa-solid fa-table-cells-large"></i>
+                                <span>Nền / Lưới</span>
                             </button>
                         </div>
 
-                        {/* Thumbnails (demo 1 trang) */}
+                        {/* Thumbnails (demo) */}
                         <div className="thumbs">
-                            <div className="thumb" title={file?.name}>
-                                {file &&
-                                (file.type?.startsWith("image/") ||
-                                    file.name
-                                        .toLowerCase()
-                                        .match(/\.(png|jpe?g|gif|webp)$/)) ? (
-                                    <img src={file.url} alt="thumb" />
+                            {file &&
+                            (file.type?.toLowerCase().includes("pdf") ||
+                                file.name?.toLowerCase().endsWith(".pdf")) ? (
+                                thumbnails.length > 0 ? (
+                                    thumbnails.map((src, idx) => (
+                                        <div
+                                            className="thumb"
+                                            title={`${file.name} - Trang ${
+                                                idx + 1
+                                            }`}
+                                            key={idx}
+                                        >
+                                            <img
+                                                src={src}
+                                                alt={`thumb-${idx + 1}`}
+                                            />
+                                            <span className="thumb-num">
+                                                {idx + 1}
+                                            </span>
+                                        </div>
+                                    ))
                                 ) : (
-                                    <div className="thumb-pdf">
-                                        <FiFileText size={22} />
-                                        <span>PDF</span>
+                                    <div className="thumb" title={file.name}>
+                                        <div className="thumb-pdf">
+                                            <FiFileText size={22} />
+                                            <span>Đang tạo thumbnail…</span>
+                                        </div>
+                                        <span className="thumb-num">1</span>
                                     </div>
-                                )}
-                                <span className="thumb-num">1</span>
-                            </div>
+                                )
+                            ) : file &&
+                              (file.type?.startsWith("image/") ||
+                                  file.name
+                                      ?.toLowerCase()
+                                      .match(/\.(png|jpe?g|gif|webp)$/)) ? (
+                                <div className="thumb" title={file.name}>
+                                    <img src={file.url} alt="thumb" />
+                                    <span className="thumb-num">1</span>
+                                </div>
+                            ) : null}
                         </div>
                     </aside>
 

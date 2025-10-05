@@ -14,7 +14,7 @@
 }
 
 .dashboard__controls {
-    margin-top: 35px;
+    margin: 35px auto 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -138,7 +138,7 @@
 
 /* Table */
 .table__inner {
-    margin-top: 10px;
+    margin: 20px auto 0;
     max-width: 1307px;
     max-height: 390px;
     overflow-x: hidden;
