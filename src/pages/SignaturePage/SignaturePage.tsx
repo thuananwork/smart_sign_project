@@ -21,8 +21,8 @@ import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 type PreviewFile = { url: string; name: string; type: string };
 type Panel = "draw" | "saved" | "tools" | null;
 
-const SIG_WORK_W = 820;
-const SIG_WORK_H = 420;
+const SIG_WORK_W = 680;
+const SIG_WORK_H = 280;
 
 export default function SignaturePage() {
     const [sigTab, setSigTab] = useState<"draw" | "upload">("draw");
@@ -942,32 +942,28 @@ export default function SignaturePage() {
                                                 </button>
                                             </div>
 
-                                            <div style={{ marginBottom: 10 }}>
-                                                <label>
-                                                    Độ nét (độ dày nét):
-                                                    <input
-                                                        type="range"
-                                                        min="1"
-                                                        max="5"
-                                                        step="0.5"
-                                                        value={drawLineWidth}
-                                                        onChange={(e) =>
-                                                            setDrawLineWidth(
-                                                                parseFloat(
-                                                                    e.target
-                                                                        .value
-                                                                )
+                                            <label className="line-width">
+                                                Độ nét (độ dày nét):
+                                                <input
+                                                    type="range"
+                                                    min="1"
+                                                    max="5"
+                                                    step="0.5"
+                                                    value={drawLineWidth}
+                                                    onChange={(e) =>
+                                                        setDrawLineWidth(
+                                                            parseFloat(
+                                                                e.target.value
                                                             )
-                                                        }
-                                                        style={{
-                                                            margin: "0 8px",
-                                                            verticalAlign:
-                                                                "middle",
-                                                        }}
-                                                    />
-                                                    <span>{drawLineWidth}</span>
-                                                </label>
-                                            </div>
+                                                        )
+                                                    }
+                                                    style={{
+                                                        margin: "0 8px",
+                                                        verticalAlign: "middle",
+                                                    }}
+                                                />
+                                                <span>{drawLineWidth}</span>
+                                            </label>
 
                                             {/* === Canvas với khung LỚN === */}
                                             <div className="sig-work">
@@ -981,41 +977,32 @@ export default function SignaturePage() {
                                                 />
                                             </div>
 
-                                            <div
-                                                className="action-buttons"
-                                                style={{
-                                                    justifyContent:
-                                                        "space-between",
-                                                }}
-                                            >
+                                            <div className="action-buttons">
                                                 <button
+                                                    className="signature__btn signature__clear"
                                                     onClick={() =>
                                                         sigRef.current?.clear()
                                                     }
                                                 >
                                                     Xóa
                                                 </button>
-                                                <div
-                                                    style={{
-                                                        display: "flex",
-                                                        gap: 8,
-                                                    }}
+
+                                                <button
+                                                    className="signature__btn signature__cancel"
+                                                    onClick={() =>
+                                                        setOpenPanel(null)
+                                                    }
                                                 >
-                                                    <button
-                                                        onClick={() =>
-                                                            setOpenPanel(null)
-                                                        }
-                                                    >
-                                                        Hủy
-                                                    </button>
-                                                    <button
-                                                        onClick={
-                                                            handleCreateFromCanvas
-                                                        }
-                                                    >
-                                                        Tạo
-                                                    </button>
-                                                </div>
+                                                    Hủy
+                                                </button>
+                                                <button
+                                                    className="signature__btn signature__create"
+                                                    onClick={
+                                                        handleCreateFromCanvas
+                                                    }
+                                                >
+                                                    Tạo
+                                                </button>
                                             </div>
                                         </>
                                     ) : (
