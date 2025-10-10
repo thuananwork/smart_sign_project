@@ -341,3 +341,419 @@
 .avatar__modal-footer {
     padding: 12px 0;
 }
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .profile__page {
+        flex-direction: column;
+    }
+
+    .profile__taskbar {
+        width: 100%;
+        min-height: auto;
+        padding-top: 50px;
+        padding-bottom: 30px;
+        flex-direction: row;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .profile__avatar {
+        width: 100px;
+        height: 105px;
+    }
+
+    .profile__name {
+        width: auto;
+        font-size: 1.8rem;
+    }
+
+    .profile__content {
+        padding: 20px 30px;
+    }
+
+    .profile__form {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .profile__cell:first-child,
+    .profile__cell:nth-child(3) {
+        max-width: none;
+    }
+
+    .profile__cell:nth-child(2),
+    .profile__cell:nth-child(4),
+    .profile__cell:last-child {
+        max-width: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .profile__taskbar {
+        padding-top: 40px;
+        padding-bottom: 20px;
+        gap: 15px;
+    }
+
+    .profile__avatar {
+        width: 80px;
+        height: 85px;
+    }
+
+    .profile__camera {
+        width: 28px;
+        height: 28px;
+        right: 6px;
+        bottom: 3px;
+    }
+
+    .profile__camera-icon {
+        font-size: 14px;
+    }
+
+    .profile__name {
+        font-size: 1.5rem;
+    }
+
+    .profile__content {
+        padding: 15px 20px;
+    }
+
+    .profile__heading {
+        font-size: 1.7rem;
+    }
+
+    .profile__form {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .profile__label {
+        font-size: 1.1rem;
+    }
+
+    .profile__input {
+        font-size: 1.1rem;
+        padding: 6px 10px;
+    }
+
+    .profile__btn {
+        font-size: 1.3rem;
+        padding: 10px 16px;
+    }
+
+    .avatar__modal-content {
+        min-width: 70%;
+    }
+
+    .avatar__modal-images {
+        width: 300px;
+        height: 330px;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile__taskbar {
+        padding-top: 30px;
+        padding-bottom: 15px;
+        gap: 12px;
+    }
+
+    .profile__avatar {
+        width: 70px;
+        height: 75px;
+    }
+
+    .profile__camera {
+        width: 24px;
+        height: 24px;
+        right: 4px;
+        bottom: 2px;
+    }
+
+    .profile__camera-icon {
+        font-size: 12px;
+    }
+
+    .profile__name {
+        font-size: 1.3rem;
+    }
+
+    .profile__content {
+        padding: 12px 15px;
+    }
+
+    .profile__heading {
+        font-size: 1.5rem;
+    }
+
+    .profile__form {
+        gap: 12px;
+    }
+
+    .profile__label {
+        font-size: 1rem;
+    }
+
+    .profile__input {
+        font-size: 1rem;
+        padding: 5px 8px;
+        height: 35px;
+    }
+
+    .profile__btn {
+        font-size: 1.2rem;
+        padding: 8px 14px;
+    }
+
+    .profile__row {
+        margin-top: 30px;
+    }
+
+    .profile-menu {
+        min-width: 280px;
+        left: -40%;
+    }
+
+    .profile-menu__btn {
+        font-size: 1.3rem;
+        padding: 10px 6px;
+    }
+
+    .avatar__modal-content {
+        min-width: 80%;
+    }
+
+    .avatar__modal-images {
+        width: 250px;
+        height: 280px;
+    }
+
+    .avatar__modal-name {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 600px) {
+    .profile__taskbar {
+        padding-top: 25px;
+        padding-bottom: 12px;
+        gap: 10px;
+    }
+
+    .profile__avatar {
+        width: 60px;
+        height: 65px;
+    }
+
+    .profile__camera {
+        width: 20px;
+        height: 20px;
+        right: 3px;
+        bottom: 1px;
+    }
+
+    .profile__camera-icon {
+        font-size: 10px;
+    }
+
+    .profile__name {
+        font-size: 1.1rem;
+    }
+
+    .profile__content {
+        padding: 10px 12px;
+    }
+
+    .profile__heading {
+        font-size: 1.3rem;
+    }
+
+    .profile__form {
+        gap: 10px;
+    }
+
+    .profile__label {
+        font-size: 0.9rem;
+    }
+
+    .profile__input {
+        font-size: 0.9rem;
+        padding: 4px 6px;
+        height: 32px;
+    }
+
+    .profile__btn {
+        font-size: 1.1rem;
+        padding: 6px 12px;
+    }
+
+    .profile__row {
+        margin-top: 25px;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .profile__close {
+        margin-left: 0;
+    }
+
+    .profile-menu {
+        min-width: 240px;
+        left: -30%;
+    }
+
+    .profile-menu__btn {
+        font-size: 1.2rem;
+        padding: 8px 4px;
+    }
+
+    .avatar__modal-content {
+        min-width: 90%;
+    }
+
+    .avatar__modal-images {
+        width: 200px;
+        height: 230px;
+    }
+
+    .avatar__modal-name {
+        font-size: 12px;
+    }
+
+    .avatar__modal-btn {
+        padding: 0 15px;
+        font-size: 30px;
+    }
+
+    .avatar__modal-btn--close {
+        font-size: 1.5rem;
+        top: -6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile__taskbar {
+        padding-top: 20px;
+        padding-bottom: 10px;
+        gap: 8px;
+    }
+
+    .profile__avatar {
+        width: 50px;
+        height: 55px;
+    }
+
+    .profile__camera {
+        width: 18px;
+        height: 18px;
+        right: 2px;
+        bottom: 1px;
+    }
+
+    .profile__camera-icon {
+        font-size: 9px;
+    }
+
+    .profile__name {
+        font-size: 1rem;
+    }
+
+    .profile__content {
+        padding: 8px 10px;
+    }
+
+    .profile__heading {
+        font-size: 1.2rem;
+    }
+
+    .profile__form {
+        gap: 8px;
+    }
+
+    .profile__label {
+        font-size: 0.8rem;
+    }
+
+    .profile__input {
+        font-size: 0.8rem;
+        padding: 3px 5px;
+        height: 30px;
+    }
+
+    .profile__btn {
+        font-size: 1rem;
+        padding: 5px 10px;
+    }
+
+    .profile__row {
+        margin-top: 20px;
+        gap: 8px;
+    }
+
+    .profile-menu {
+        min-width: 200px;
+        left: -25%;
+    }
+
+    .profile-menu__btn {
+        font-size: 1.1rem;
+        padding: 6px 3px;
+    }
+
+    .avatar__modal-content {
+        min-width: 95%;
+    }
+
+    .avatar__modal-images {
+        width: 150px;
+        height: 180px;
+    }
+
+    .avatar__modal-name {
+        font-size: 11px;
+    }
+
+    .avatar__modal-btn {
+        padding: 0 10px;
+        font-size: 25px;
+    }
+
+    .avatar__modal-btn--close {
+        font-size: 1.2rem;
+        top: -4px;
+    }
+}
+
+/* Avatar Crop Modal Responsive */
+@media (max-width: 768px) {
+    .avatar-crop-modal {
+        padding: 10px;
+    }
+
+    .avatar-crop-modal-content {
+        width: 90%;
+        max-width: 400px;
+    }
+
+    .avatar-crop-modal-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .avatar-crop-modal {
+        padding: 5px;
+    }
+
+    .avatar-crop-modal-content {
+        width: 95%;
+        max-width: 300px;
+    }
+
+    .avatar-crop-modal-actions {
+        gap: 8px;
+    }
+}

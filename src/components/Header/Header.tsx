@@ -10,26 +10,34 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ userName, avatarUrl, onLogout }) => {
-    const [showMenu, setShowMenu] = React.useState(false);
+    const [showMobileMenu, setShowMobileMenu] = React.useState(false);
+    const [showUserMenu, setShowUserMenu] = React.useState(false);
     const [showProfile, setShowProfile] = React.useState(false);
-    const currentPath = window.location.pathname;
-    const menuRef = React.useRef<HTMLDivElement>(null);
+    const userMenuRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
-        if (!showMenu) return;
+        if (!showUserMenu) return;
         const handleClickOutside = (event: MouseEvent) => {
             if (
-                menuRef.current &&
-                !menuRef.current.contains(event.target as Node)
+                userMenuRef.current &&
+                !userMenuRef.current.contains(event.target as Node)
             ) {
-                setShowMenu(false);
+                setShowUserMenu(false);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [showMenu]);
+    }, [showUserMenu]);
+
+    const toggleMobileMenu = () => {
+        setShowMobileMenu(!showMobileMenu);
+    };
+
+    const closeMobileMenu = () => {
+        setShowMobileMenu(false);
+    };
 
     return (
         <header className="header">
@@ -38,53 +46,113 @@ const Header: React.FC<HeaderProps> = ({ userName, avatarUrl, onLogout }) => {
                 <img src={logo} alt="SmartSign" className="header__logo" />
             </NavLink>
 
-            {/* Navigation Links */}
-            <nav className="header__nav">
-                <NavLink
-                    to="/dashboard"
-                    className={({ isActive }) =>
-                        `header__link ${isActive ? "header__active" : ""}`
-                    }
-                >
-                    Quản lý hợp đồng
-                </NavLink>
-                <NavLink
-                    to="/signature"
-                    className={({ isActive }) =>
-                        `header__link ${isActive ? "header__active" : ""}`
-                    }
-                >
-                    Trang Ký Tên
-                </NavLink>
-            </nav>
+            {/* Hamburger Menu Button */}
+            <button
+                className="header__hamburger"
+                onClick={toggleMobileMenu}
+                aria-label="Toggle menu"
+            >
+                <i
+                    className={`header__hamburger-icon fa-solid ${
+                        showMobileMenu ? "fa-xmark" : "fa-bars"
+                    }`}
+                ></i>
+            </button>
 
-            {/* User Info and Dropdown */}
-            <div className="header__information" ref={menuRef}>
+            {/* Mobile Menu Overlay */}
+            {showMobileMenu && (
+                <div
+                    className={`header__mobile-overlay ${
+                        showMobileMenu ? "show" : ""
+                    }`}
+                    onClick={closeMobileMenu}
+                >
+                    <nav
+                        className="header__mobile-nav"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="header__mobile-user">
+                            <img
+                                src={avatarUrl || "/default-avatar.png"}
+                                className="header__mobile-avatar"
+                                alt="avatar"
+                            />
+                            <span className="header__mobile-username">
+                                {userName || "User"}
+                            </span>
+                        </div>
+
+                        <div className="header__mobile-links">
+                            <NavLink
+                                to="/dashboard"
+                                className={({ isActive }) =>
+                                    `header__mobile-link ${
+                                        isActive ? "header__mobile-active" : ""
+                                    }`
+                                }
+                                onClick={closeMobileMenu}
+                            >
+                                Quản lý hợp đồng
+                            </NavLink>
+                            <NavLink
+                                to="/signature"
+                                className={({ isActive }) =>
+                                    `header__mobile-link ${
+                                        isActive ? "header__mobile-active" : ""
+                                    }`
+                                }
+                                onClick={closeMobileMenu}
+                            >
+                                Trang Ký Tên
+                            </NavLink>
+                            <NavLink
+                                to="/profile"
+                                className="header__mobile-link"
+                                onClick={closeMobileMenu}
+                            >
+                                Hồ sơ
+                            </NavLink>
+                            <button
+                                className="header__mobile-link header__mobile-logout"
+                                onClick={() => {
+                                    closeMobileMenu();
+                                    onLogout?.();
+                                }}
+                            >
+                                Đăng xuất
+                            </button>
+                        </div>
+                    </nav>
+                </div>
+            )}
+
+            {/* Desktop User Menu (hidden on mobile) */}
+            <div className="header__desktop-user" ref={userMenuRef}>
                 <button
-                    className="header__btn"
-                    onClick={() => setShowMenu((v) => !v)}
+                    className="header__user-btn"
+                    onClick={() => setShowUserMenu((v) => !v)}
                     tabIndex={0}
                 >
                     <img
                         src={avatarUrl || "/default-avatar.png"}
-                        className="header__avatar"
+                        className="header__user-avatar"
                         alt="avatar"
                     />
-                    <span className="header__username">
+                    <span className="header__user-name">
                         {userName || "User"}
                     </span>
                 </button>
-                {showMenu && (
-                    <div className="header__menu">
+                {showUserMenu && (
+                    <div className="header__user-menu">
                         <NavLink
                             to="/profile"
-                            className="header__menu-item"
-                            onClick={() => setShowMenu(false)}
+                            className="header__user-menu-item"
+                            onClick={() => setShowUserMenu(false)}
                         >
                             Hồ sơ
                         </NavLink>
                         <button
-                            className="header__menu-item"
+                            className="header__user-menu-item"
                             onClick={onLogout}
                         >
                             Đăng xuất

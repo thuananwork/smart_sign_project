@@ -12,6 +12,7 @@ export interface CanvasSignatureHandle {
 
 interface CanvasSignatureProps {
     onSave?: (dataUrl: string) => void;
+    onDrawingChange?: (hasDrawing: boolean) => void;
     width?: number; // CSS px
     height?: number; // CSS px
     strokeStyle?: string;
@@ -25,6 +26,7 @@ const CanvasSignature = React.forwardRef<
     (
         {
             onSave,
+            onDrawingChange,
             width = 560,
             height = 240,
             strokeStyle = "#000000",
@@ -39,7 +41,10 @@ const CanvasSignature = React.forwardRef<
             clear() {
                 const c = canvasRef.current;
                 const ctx = c?.getContext("2d");
-                if (c && ctx) ctx.clearRect(0, 0, c.width, c.height);
+                if (c && ctx) {
+                    ctx.clearRect(0, 0, c.width, c.height);
+                    onDrawingChange?.(false);
+                }
             },
             toDataURL() {
                 const c = canvasRef.current;
@@ -105,6 +110,7 @@ const CanvasSignature = React.forwardRef<
                 const { x, y } = pos(e);
                 ctx.lineTo(x, y);
                 ctx.stroke();
+                onDrawingChange?.(true);
             };
             const up = (e: PointerEvent) => {
                 if (!isDrawing.current) return;

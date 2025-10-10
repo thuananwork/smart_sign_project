@@ -40,6 +40,8 @@
 
 /* Saved box */
 .sig-box {
+  margin-top: 22px;
+  min-width: 270px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -47,19 +49,19 @@
 
 .sig-preview {
   flex: 1;
-  min-height: 56px;
+  min-height: 52px;
   border: 1px solid #e6ecfb;
   border-radius: 10px;
   background: #fff;
-  padding: 6px 10px;
+  padding: 10px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   overflow: hidden;
 }
 
 .sig-preview img {
-  max-height: 42px;
+  max-height: 30px;
   width: auto;
   display: block;
 }
@@ -77,12 +79,13 @@
   place-items: center;
   background: #f6f8ff;
   border: 1px solid #e7ecf7;
-  color: #173066;
+  color: #c82f2f;
   cursor: pointer;
+  transition: .25s;
 }
 
 .sig-delete:hover {
-  background: #e0e6f0;
+  opacity: 0.9;
 }
 
 .sig-delete:disabled {
@@ -93,6 +96,34 @@
 .sig-delete svg {
   width: 22px;
   height: 22px;
+}
+
+.savedSignature-actions {
+  margin-top: 22px;
+  justify-content: space-between;
+}
+
+.savedSignature__btn {
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  transition: .25s;
+}
+
+.savedSignature__btn:hover {
+  opacity: 0.9;
+}
+
+.savedSignature__create {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.savedSignature__use {
+  background-color: #6b7280;
+  color: #fff;
 }
 
 /* Buttons */
@@ -527,8 +558,16 @@
   color: #fff;
 }
 
+.signature__create:disabled {
+  background: #ccc;
+  border: 1px solid #ccc;
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .signature__clear:hover,
-.signature__create:hover {
+.signature__create:hover:not(:disabled) {
   opacity: 0.9;
 }
 
@@ -541,13 +580,504 @@
   display: none;
 }
 
-@media (max-width:1100px) {
+/* Responsive Design */
+@media (max-width: 1400px) {
+  .sign-topbar {
+    max-width: 95%;
+    margin: 12px auto 0;
+  }
+
+  .sign-shell {
+    max-width: 95%;
+    margin: 14px auto;
+  }
+}
+
+@media (max-width: 1200px) {
+  .sign-topbar {
+    max-width: 98%;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .file-name {
+    font-size: 1.4rem;
+  }
+
+  .topbar-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .btn {
+    font-size: 1.3rem;
+    padding: 6px 12px;
+  }
+
+  .sign-shell {
+    max-width: 98%;
+    grid-template-columns: 200px 1fr;
+    gap: 12px;
+  }
+
+  .viewer-area {
+    height: calc(100vh - 200px);
+  }
+}
+
+@media (max-width: 1100px) {
   .sign-shell {
     grid-template-columns: 90px 1fr;
+    gap: 10px;
   }
 
   .thumbs {
     display: none;
+  }
+
+  .rail-btn {
+    font-size: 1.3rem;
+    padding: 6px 10px;
+  }
+
+  .rail-btn span {
+    display: none;
+  }
+
+  .tool-modal-content {
+    max-width: 90vw;
+    padding: 20px 18px;
+  }
+
+  .sig-work {
+    height: 250px;
+  }
+}
+
+@media (max-width: 900px) {
+  .sign-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .file-meta {
+    text-align: center;
+  }
+
+  .file-name {
+    font-size: 1.2rem;
+  }
+
+  .topbar-actions {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-size: 1.2rem;
+    padding: 5px 10px;
+  }
+
+  .sign-shell {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 10px auto;
+  }
+
+  .left-rail {
+    order: 2;
+    max-height: none;
+    padding: 8px;
+  }
+
+  .rail-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .rail-btn {
+    flex: 1;
+    min-width: 120px;
+    font-size: 1.2rem;
+    padding: 8px 12px;
+  }
+
+  .rail-btn span {
+    display: inline;
+  }
+
+  .viewer-area {
+    order: 1;
+    height: calc(100vh - 300px);
+    min-height: 400px;
+  }
+
+  .tool-modal-content {
+    max-width: 95vw;
+    padding: 15px;
+    margin: 10px;
+  }
+
+  .tool-title {
+    font-size: 1.5rem;
+  }
+
+  .sig-work {
+    height: 200px;
+  }
+
+  .upload-hero {
+    width: 95%;
+    min-height: 50vh;
+  }
+
+  .hero-title {
+    font-size: 1.1rem;
+  }
+
+  .hero-sub {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sign-topbar {
+    padding: 8px;
+    margin: 8px auto 0;
+  }
+
+  .file-name {
+    font-size: 1.1rem;
+  }
+
+  .btn {
+    font-size: 1.1rem;
+    padding: 4px 8px;
+  }
+
+  .btn.small {
+    font-size: 1rem;
+    padding: 3px 6px;
+  }
+
+  .sign-shell {
+    margin: 8px auto;
+    padding: 0 2px;
+  }
+
+  .left-rail {
+    padding: 6px;
+  }
+
+  .rail-group {
+    gap: 6px;
+  }
+
+  .rail-btn {
+    font-size: 1.1rem;
+    padding: 6px 10px;
+    min-width: 100px;
+  }
+
+  .viewer-area {
+    height: calc(100vh - 250px);
+    min-height: 350px;
+  }
+
+  .tool-modal-content {
+    max-width: 98vw;
+    padding: 12px;
+    margin: 5px;
+  }
+
+  .tool-title {
+    font-size: 1.3rem;
+  }
+
+  .sig-work {
+    height: 180px;
+  }
+
+  .color-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .color-swatch {
+    width: 30px;
+    height: 30px;
+  }
+
+  .color-swatch-inner {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sig-tabs {
+    gap: 6px;
+  }
+
+  .sig-tab {
+    font-size: 1.1rem;
+    padding: 8px 12px;
+  }
+
+  .upload-hero {
+    width: 98%;
+    min-height: 45vh;
+  }
+
+  .hero-title {
+    font-size: 1rem;
+  }
+
+  .hero-sub {
+    font-size: 0.8rem;
+  }
+
+  .cloud-ico {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sign-topbar {
+    padding: 6px;
+    margin: 6px auto 0;
+  }
+
+  .file-name {
+    font-size: 1rem;
+  }
+
+  .btn {
+    font-size: 1rem;
+    padding: 3px 6px;
+  }
+
+  .btn.small {
+    font-size: 0.9rem;
+    padding: 2px 4px;
+  }
+
+  .sign-shell {
+    margin: 6px auto;
+    padding: 0;
+  }
+
+  .left-rail {
+    padding: 4px;
+  }
+
+  .rail-group {
+    gap: 4px;
+  }
+
+  .rail-btn {
+    font-size: 1rem;
+    padding: 4px 8px;
+    min-width: 80px;
+  }
+
+  .rail-btn span {
+    font-size: 0.9rem;
+  }
+
+  .viewer-area {
+    height: calc(100vh - 200px);
+    min-height: 300px;
+  }
+
+  .tool-modal-content {
+    max-width: 100vw;
+    padding: 10px;
+    margin: 0;
+    border-radius: 8px;
+  }
+
+  .tool-title {
+    font-size: 1.2rem;
+  }
+
+  .sig-work {
+    height: 150px;
+  }
+
+  .color-row {
+    gap: 6px;
+  }
+
+  .color-swatch {
+    width: 28px;
+    height: 28px;
+  }
+
+  .color-swatch-inner {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sig-tabs {
+    gap: 4px;
+  }
+
+  .sig-tab {
+    font-size: 1rem;
+    padding: 6px 10px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .signature__btn {
+    font-size: 1rem;
+    padding: 6px 12px;
+  }
+
+  .upload-hero {
+    width: 100%;
+    min-height: 40vh;
+    border-radius: 8px;
+  }
+
+  .upload-hero-inner {
+    padding: 20px;
+  }
+
+  .hero-title {
+    font-size: 0.9rem;
+  }
+
+  .hero-sub {
+    font-size: 0.75rem;
+  }
+
+  .cloud-ico {
+    font-size: 32px;
+  }
+
+  .hero-btn {
+    font-size: 1rem;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sign-topbar {
+    padding: 4px;
+    margin: 4px auto 0;
+  }
+
+  .file-name {
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+    padding: 2px 4px;
+  }
+
+  .btn.small {
+    font-size: 0.8rem;
+    padding: 1px 3px;
+  }
+
+  .sign-shell {
+    margin: 4px auto;
+  }
+
+  .left-rail {
+    padding: 3px;
+  }
+
+  .rail-group {
+    gap: 3px;
+  }
+
+  .rail-btn {
+    font-size: 0.9rem;
+    padding: 3px 6px;
+    min-width: 70px;
+  }
+
+  .rail-btn span {
+    font-size: 0.8rem;
+  }
+
+  .viewer-area {
+    height: calc(100vh - 180px);
+    min-height: 250px;
+  }
+
+  .tool-modal-content {
+    padding: 8px;
+  }
+
+  .tool-title {
+    font-size: 1.1rem;
+  }
+
+  .sig-work {
+    height: 120px;
+  }
+
+  .color-row {
+    gap: 4px;
+  }
+
+  .color-swatch {
+    width: 24px;
+    height: 24px;
+  }
+
+  .color-swatch-inner {
+    width: 14px;
+    height: 14px;
+  }
+
+  .sig-tabs {
+    gap: 3px;
+  }
+
+  .sig-tab {
+    font-size: 0.9rem;
+    padding: 4px 8px;
+  }
+
+  .signature__btn {
+    font-size: 0.9rem;
+    padding: 4px 8px;
+  }
+
+  .upload-hero {
+    min-height: 35vh;
+  }
+
+  .upload-hero-inner {
+    padding: 15px;
+  }
+
+  .hero-title {
+    font-size: 0.8rem;
+  }
+
+  .hero-sub {
+    font-size: 0.7rem;
+  }
+
+  .cloud-ico {
+    font-size: 28px;
+  }
+
+  .hero-btn {
+    font-size: 0.9rem;
+    padding: 4px 8px;
   }
 }
 
@@ -559,8 +1089,6 @@
 }
 
 .color-label {
-  font-weight: 600;
-  color: #173066;
   margin-right: 2px;
 }
 

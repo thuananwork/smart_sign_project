@@ -17,12 +17,19 @@ const FileUpload: React.FC<Props> = ({ onUpload }) => {
                 return;
             }
             setIsUploading(true);
-            const fileUrl = URL.createObjectURL(file);
-            setTimeout(() => {
-                onUpload(file.name, fileUrl);
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                const dataUrl = reader.result as string; // data:application/pdf;base64,...
+                onUpload(file.name, dataUrl);
                 setIsUploading(false);
                 e.target.value = ""; // Reset input
-            }, 1000);
+            };
+            reader.onerror = () => {
+                setIsUploading(false);
+                alert("Không thể đọc tệp PDF. Vui lòng thử lại!");
+            };
+            reader.readAsDataURL(file);
         }
     };
 
