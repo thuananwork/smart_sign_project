@@ -48,10 +48,15 @@ const DocumentActions: React.FC<Props> = ({ document: doc, onDelete }) => {
 
     const handleView = () => {
         setShowMenu(false);
-        if (doc.fileUrl) {
+        // Only allow http(s) or data URLs for stable preview
+        const url = doc.fileUrl || "";
+        const isDataOrHttp = url.startsWith("data:") || url.startsWith("http");
+        if (doc.fileUrl && isDataOrHttp) {
             setShowPreview(true);
         } else {
-            alert("Không có bản xem trước cho tài liệu này!");
+            alert(
+                "Không có bản xem trước cho tài liệu này hoặc liên kết đã hết hạn!"
+            );
         }
     };
 
@@ -76,9 +81,6 @@ const DocumentActions: React.FC<Props> = ({ document: doc, onDelete }) => {
         setShowConfirm(false);
         if (onDelete) {
             onDelete(doc.id);
-            if (doc.fileUrl) {
-                URL.revokeObjectURL(doc.fileUrl);
-            }
         }
         setShowToast(true);
     };

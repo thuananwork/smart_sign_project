@@ -118,6 +118,10 @@ const Profile: React.FC = () => {
             }
             if (hasError) return;
             setProfile(editProfile);
+            // Sync full name for other pages
+            try {
+                localStorage.setItem("profileFullName", editProfile.fullName);
+            } catch {}
         } else {
             setEditProfile(profile);
             setFullNameError("");

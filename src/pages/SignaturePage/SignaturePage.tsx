@@ -17,6 +17,7 @@ import {
 import "../../styles/Background.css";
 import "./SignaturePage.css";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+import { PDFDocument } from "pdf-lib";
 
 type PreviewFile = { url: string; name: string; type: string };
 type Panel = "draw" | "saved" | "tools" | null;
@@ -41,8 +42,9 @@ export default function SignaturePage() {
     const [drawColor, setDrawColor] = useState<string>("#000000");
     const [drawLineWidth, setDrawLineWidth] = useState<number>(2);
     const [saving, setSaving] = useState(false);
+    const [hasSignatureDrawn, setHasSignatureDrawn] = useState(false);
     const sigRef = useRef<CanvasSignatureHandle>(null);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [openPanel, setOpenPanel] = useState<Panel>(null);
@@ -204,21 +206,93 @@ export default function SignaturePage() {
         fileInputRef.current?.click();
     };
 
-    const handleSourceSelect = (source: string) => {
-        if (source === "device") openFileDialog();
-        else if (source === "drive")
-            alert("Tải từ Google Drive (cần tích hợp API).");
-        else if (source === "onedrive")
-            alert("Tải từ OneDrive (cần tích hợp API).");
-        setIsDropdownOpen(false);
-    };
-
     const handleDownload = () => {
         if (!file) return;
         const a = document.createElement("a");
         a.href = file.url;
         a.download = file.name || "document";
         a.click();
+    };
+
+    const handleComplete = async () => {
+        if (!file) return alert("Chưa có tài liệu.");
+        const isPdf =
+            file.type?.toLowerCase().includes("pdf") ||
+            file.name?.toLowerCase().endsWith(".pdf");
+        if (!isPdf) return alert("Hiện chỉ hỗ trợ ký file PDF.");
+        if (!showOnDocument || !selectedSignature) {
+            return alert("Hãy tạo và đặt chữ ký lên tài liệu trước.");
+        }
+
+        try {
+            // 1) Lấy kích thước trang PDF thật (pdf.js)
+            const loadingTask = getDocument(file.url as any);
+            const pdf = await loadingTask.promise;
+            const firstPage = await pdf.getPage(1);
+            const vp = firstPage.getViewport({ scale: 1 });
+            const pdfPageWidth = vp.width;
+            const pdfPageHeight = vp.height;
+
+            // 2) Lấy kích thước trang hiển thị trên UI (canvas của viewer) và offset của canvas trong wrap
+            const wrapEl = docWrapRef.current;
+            if (!wrapEl)
+                throw new Error("Không tìm thấy vùng hiển thị tài liệu");
+            const canvasEl = wrapEl.querySelector(
+                "canvas"
+            ) as HTMLCanvasElement | null;
+            if (!canvasEl)
+                throw new Error("Không tìm thấy canvas trang hiển thị");
+            const canvasRect = canvasEl.getBoundingClientRect();
+            const wrapRect = wrapEl.getBoundingClientRect();
+            const offsetLeft = canvasRect.left - wrapRect.left;
+            const offsetTop = canvasRect.top - wrapRect.top;
+            const viewW = canvasRect.width;
+            const viewH = canvasRect.height;
+            if (!viewW || !viewH)
+                throw new Error(
+                    "Không xác định được kích thước trang hiển thị"
+                );
+
+            // 3) Quy đổi toạ độ/size chữ ký từ UI -> PDF (tính theo vị trí trong canvas trang)
+            const sigDisplayW = sigWidth; // px trên UI (CSS px)
+            const sigDisplayH = sigWidth / sigAspect;
+            const withinCanvasX = sigPos.x - offsetLeft;
+            const withinCanvasY = sigPos.y - offsetTop;
+            const scaleX = pdfPageWidth / viewW;
+            const scaleY = pdfPageHeight / viewH;
+            const pdfSigW = sigDisplayW * scaleX;
+            const pdfSigH = sigDisplayH * scaleY;
+            const pdfX = withinCanvasX * scaleX;
+            const pdfY = (viewH - (withinCanvasY + sigDisplayH)) * scaleY; // UI origin top-left -> PDF origin bottom-left
+
+            // 4) Tải PDF (dataURL) và nhúng ảnh chữ ký bằng pdf-lib
+            const pdfBytes = await (await fetch(file.url)).arrayBuffer();
+            const pdfDoc = await PDFDocument.load(pdfBytes);
+            const pngBytes = await (
+                await fetch(selectedSignature)
+            ).arrayBuffer();
+            const pngImage = await pdfDoc.embedPng(pngBytes);
+
+            const [page] = pdfDoc.getPages();
+            page.drawImage(pngImage, {
+                x: pdfX,
+                y: pdfY,
+                width: pdfSigW,
+                height: pdfSigH,
+            });
+
+            // 5) Xuất PDF đã ký và tải về
+            const signedBase64 = await pdfDoc.saveAsBase64({ dataUri: true });
+            const a = document.createElement("a");
+            a.href = signedBase64; // data:application/pdf;base64,...
+            a.download = file.name?.replace(/\.pdf$/i, "") + "_signed.pdf";
+            a.click();
+
+            alert("Đã tạo file PDF đã ký và tải về.");
+        } catch (err) {
+            console.error(err);
+            alert("Ký tài liệu thất bại. Vui lòng thử lại!");
+        }
     };
 
     const handleRestart = () => {
@@ -427,13 +501,25 @@ export default function SignaturePage() {
         const area = viewerAreaRef.current;
         const wrap = docWrapRef.current;
         if (area && wrap) {
-            const centerX = (wrap.clientWidth - w) / 2;
-            const visibleCenterY = area.scrollTop + area.clientHeight / 2;
-            let newX = Math.max(0, centerX);
-            let newY = Math.max(0, visibleCenterY - h / 2);
-            newX = Math.min(newX, wrap.clientWidth - w);
-            newY = Math.min(newY, wrap.scrollHeight - h);
-            setSigPos({ x: newX, y: newY });
+            const metrics = getCanvasMetrics();
+            if (metrics) {
+                const centerX = metrics.offsetLeft + (metrics.width - w) / 2;
+                const canvasTopInArea = metrics.offsetTop;
+                const visibleCenterY = area.scrollTop + area.clientHeight / 2;
+                let newX = Math.max(metrics.offsetLeft, centerX);
+                let newY = Math.max(metrics.offsetTop, visibleCenterY - h / 2);
+                newX = Math.min(newX, metrics.offsetLeft + metrics.width - w);
+                newY = Math.min(newY, canvasTopInArea + metrics.height - h);
+                setSigPos({ x: newX, y: newY });
+            } else {
+                const centerX = (wrap.clientWidth - w) / 2;
+                const visibleCenterY = area.scrollTop + area.clientHeight / 2;
+                let newX = Math.max(0, centerX);
+                let newY = Math.max(0, visibleCenterY - h / 2);
+                newX = Math.min(newX, wrap.clientWidth - w);
+                newY = Math.min(newY, wrap.scrollHeight - h);
+                setSigPos({ x: newX, y: newY });
+            }
         }
     };
 
@@ -469,6 +555,30 @@ export default function SignaturePage() {
         }
     };
 
+    // Lấy thông tin vị trí và kích thước canvas trang PDF bên trong wrapper
+    function getCanvasMetrics() {
+        const wrapEl = docWrapRef.current;
+        if (!wrapEl)
+            return null as null | {
+                offsetLeft: number;
+                offsetTop: number;
+                width: number;
+                height: number;
+            };
+        const canvasEl = wrapEl.querySelector(
+            "canvas"
+        ) as HTMLCanvasElement | null;
+        if (!canvasEl) return null;
+        const canvasRect = canvasEl.getBoundingClientRect();
+        const wrapRect = wrapEl.getBoundingClientRect();
+        return {
+            offsetLeft: canvasRect.left - wrapRect.left,
+            offsetTop: canvasRect.top - wrapRect.top,
+            width: canvasRect.width,
+            height: canvasRect.height,
+        };
+    }
+
     // ===== Drag/Resize chữ ký =====
     const onSigPointerDown = (e: React.PointerEvent) => {
         if (!docWrapRef.current) return;
@@ -484,16 +594,26 @@ export default function SignaturePage() {
 
     const onSigPointerMove = (e: React.PointerEvent) => {
         if (!dragging || !docWrapRef.current) return;
-        const rect = docWrapRef.current.getBoundingClientRect();
-        const curX = e.clientX - rect.left;
-        const curY = e.clientY - rect.top;
+        const wrapRect = docWrapRef.current.getBoundingClientRect();
+        const curX = e.clientX - wrapRect.left;
+        const curY = e.clientY - wrapRect.top;
 
         let nx = curX - dragOffset.current.dx;
         let ny = curY - dragOffset.current.dy;
 
-        nx = Math.max(0, Math.min(nx, rect.width - sigWidth));
-        const h = sigWidth / sigAspect;
-        ny = Math.max(0, Math.min(ny, rect.height - h));
+        const metrics = getCanvasMetrics();
+        const sigH = sigWidth / sigAspect;
+        if (metrics) {
+            const minX = metrics.offsetLeft;
+            const minY = metrics.offsetTop;
+            const maxX = metrics.offsetLeft + metrics.width - sigWidth;
+            const maxY = metrics.offsetTop + metrics.height - sigH;
+            nx = Math.max(minX, Math.min(nx, maxX));
+            ny = Math.max(minY, Math.min(ny, maxY));
+        } else {
+            nx = Math.max(0, Math.min(nx, wrapRect.width - sigWidth));
+            ny = Math.max(0, Math.min(ny, wrapRect.height - sigH));
+        }
 
         setSigPos({ x: nx, y: ny });
     };
@@ -524,7 +644,7 @@ export default function SignaturePage() {
 
     const onWrapperPointerMove = (e: React.PointerEvent) => {
         if (!resizing || !docWrapRef.current) return;
-        const rect = docWrapRef.current.getBoundingClientRect();
+        const wrapRect = docWrapRef.current.getBoundingClientRect();
         const {
             mouseX,
             w: startW,
@@ -538,7 +658,8 @@ export default function SignaturePage() {
         if (resizing === "tr" || resizing === "br") newW = startW + dx;
         if (resizing === "tl" || resizing === "bl") newW = startW - dx;
 
-        const maxByWrap = rect.width;
+        const metrics = getCanvasMetrics();
+        const maxByWrap = metrics ? metrics.width : wrapRect.width;
         const maxByNatural = natSizeRef.current.w || Infinity;
         const maxW = Math.min(maxByWrap, maxByNatural);
 
@@ -552,8 +673,17 @@ export default function SignaturePage() {
         if (resizing === "tl" || resizing === "tr")
             newY = startY + (startH - newH);
 
-        newX = Math.max(0, Math.min(newX, rect.width - newW));
-        newY = Math.max(0, Math.min(newY, rect.height - newH));
+        if (metrics) {
+            const minX = metrics.offsetLeft;
+            const minY = metrics.offsetTop;
+            const maxX = metrics.offsetLeft + metrics.width - newW;
+            const maxY = metrics.offsetTop + metrics.height - newH;
+            newX = Math.max(minX, Math.min(newX, maxX));
+            newY = Math.max(minY, Math.min(newY, maxY));
+        } else {
+            newX = Math.max(0, Math.min(newX, wrapRect.width - newW));
+            newY = Math.max(0, Math.min(newY, wrapRect.height - newH));
+        }
 
         setSigWidth(newW);
         setSigPos({ x: newX, y: newY });
@@ -580,7 +710,9 @@ export default function SignaturePage() {
     return (
         <div className="background-root">
             <Header
-                userName="Huỳnh Kiến Hào"
+                userName={
+                    localStorage.getItem("profileFullName") || "Huỳnh Kiến Hào"
+                }
                 avatarUrl={
                     localStorage.getItem("profileAvatarUrl") || undefined
                 }
@@ -622,9 +754,7 @@ export default function SignaturePage() {
                                 </button>
                                 <button
                                     className="btn success"
-                                    onClick={() =>
-                                        alert("Xác nhận & gửi (demo).")
-                                    }
+                                    onClick={handleComplete}
                                 >
                                     <FiCheck /> Hoàn thành
                                 </button>
@@ -668,6 +798,7 @@ export default function SignaturePage() {
                                     setOpenPanel(
                                         openPanel === "draw" ? null : "draw"
                                     );
+                                    setHasSignatureDrawn(false);
                                 }}
                             >
                                 <i className="fa-solid fa-pen-to-square"></i>
@@ -855,7 +986,10 @@ export default function SignaturePage() {
                                         className={`sig-tab ${
                                             sigTab === "draw" ? "active" : ""
                                         }`}
-                                        onClick={() => setSigTab("draw")}
+                                        onClick={() => {
+                                            setSigTab("draw");
+                                            setHasSignatureDrawn(false);
+                                        }}
                                     >
                                         ✍️ Vẽ
                                     </button>
@@ -863,7 +997,10 @@ export default function SignaturePage() {
                                         className={`sig-tab ${
                                             sigTab === "upload" ? "active" : ""
                                         }`}
-                                        onClick={() => setSigTab("upload")}
+                                        onClick={() => {
+                                            setSigTab("upload");
+                                            setHasSignatureDrawn(false);
+                                        }}
                                     >
                                         ⬆️ Tải lên
                                     </button>
@@ -943,7 +1080,7 @@ export default function SignaturePage() {
                                             </div>
 
                                             <label className="line-width">
-                                                Độ nét (độ dày nét):
+                                                Độ nét:
                                                 <input
                                                     type="range"
                                                     min="1"
@@ -974,15 +1111,21 @@ export default function SignaturePage() {
                                                     lineWidth={drawLineWidth}
                                                     strokeStyle={drawColor}
                                                     onSave={() => {}}
+                                                    onDrawingChange={
+                                                        setHasSignatureDrawn
+                                                    }
                                                 />
                                             </div>
 
                                             <div className="action-buttons">
                                                 <button
                                                     className="signature__btn signature__clear"
-                                                    onClick={() =>
-                                                        sigRef.current?.clear()
-                                                    }
+                                                    onClick={() => {
+                                                        sigRef.current?.clear();
+                                                        setHasSignatureDrawn(
+                                                            false
+                                                        );
+                                                    }}
                                                 >
                                                     Xóa
                                                 </button>
@@ -999,6 +1142,9 @@ export default function SignaturePage() {
                                                     className="signature__btn signature__create"
                                                     onClick={
                                                         handleCreateFromCanvas
+                                                    }
+                                                    disabled={
+                                                        !hasSignatureDrawn
                                                     }
                                                 >
                                                     Tạo
@@ -1128,11 +1274,9 @@ export default function SignaturePage() {
                                     </button>
                                 </div>
 
-                                <div
-                                    className="action-buttons"
-                                    style={{ justifyContent: "space-between" }}
-                                >
+                                <div className="action-buttons savedSignature-actions">
                                     <button
+                                        className="savedSignature__btn savedSignature__create"
                                         onClick={() => {
                                             setSigTab("draw");
                                             setOpenPanel("draw");
@@ -1141,6 +1285,7 @@ export default function SignaturePage() {
                                         Tạo chữ ký mới
                                     </button>
                                     <button
+                                        className="savedSignature__btn savedSignature__use"
                                         onClick={() => {
                                             if (!savedSignature) return;
                                             setSelectedSignature(

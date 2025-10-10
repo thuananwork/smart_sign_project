@@ -89,7 +89,14 @@ export const mockDocuments: DocumentItem[] = [
 const Dashboard: React.FC = () => {
     const [documents, setDocuments] = useState<DocumentItem[]>(() => {
         const saved = localStorage.getItem("documents");
-        return saved ? JSON.parse(saved) : [];
+        const parsed: DocumentItem[] = saved ? JSON.parse(saved) : [];
+        // Sanitize legacy blob: URLs which may expire; keep only data/http
+        return parsed.map((d) => {
+            const url = d.fileUrl || "";
+            const isDataOrHttp =
+                url.startsWith("data:") || url.startsWith("http");
+            return { ...d, fileUrl: isDataOrHttp ? d.fileUrl : undefined };
+        });
     });
 
     React.useEffect(() => {
@@ -125,7 +132,8 @@ const Dashboard: React.FC = () => {
         };
         setDocuments([newDoc, ...documents]);
     };
-    const userName = "Huỳnh Kiến Hào";
+    const userName =
+        localStorage.getItem("profileFullName") || "Huỳnh Kiến Hào";
     const avatarUrl = localStorage.getItem("profileAvatarUrl") || undefined;
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const sortedDocs = React.useMemo(() => {

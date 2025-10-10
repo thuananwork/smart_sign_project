@@ -1,11 +1,13 @@
 .header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
     padding: 8px 40px;
     background: #fff;
     box-sizing: border-box;
     box-shadow: 0 2px 12px #e3eaf8;
+    position: relative;
 }
 
 .header__logo {
@@ -18,8 +20,211 @@
     font-size: 1.4rem;
     color: #2050aa;
     font-weight: bold;
+    z-index: 1001;
 }
 
+/* Hamburger Menu Button */
+.header__hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+}
+
+.header__hamburger-icon {
+    color: var(--primary-color);
+    font-size: 1.7rem;
+}
+
+/* Mobile Menu Overlay */
+.header__mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none;
+}
+
+.header__mobile-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px;
+    height: 100vh;
+    background: #fff;
+    padding: 20px;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 1001;
+    overflow-y: auto;
+}
+
+.header__mobile-overlay.show .header__mobile-nav {
+    transform: translateX(0);
+}
+
+.header__mobile-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #2050aa;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header__mobile-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 0;
+    border-bottom: 1px solid #e3ecfb;
+    margin-bottom: 20px;
+}
+
+.header__mobile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.header__mobile-username {
+    font-size: 1.4rem;
+    color: #2050aa;
+    font-weight: 500;
+}
+
+.header__mobile-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.header__mobile-link {
+    display: block;
+    padding: 15px 20px;
+    color: #2d384b;
+    text-decoration: none;
+    font-size: 1.4rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+}
+
+.header__mobile-link:hover,
+.header__mobile-active {
+    background: #e3ecfb;
+    color: #2050aa;
+}
+
+.header__mobile-logout {
+    color: #e22f2f !important;
+    margin-top: 10px;
+}
+
+.header__mobile-logout:hover {
+    background: #ffeaea !important;
+    color: #e22f2f !important;
+}
+
+/* Desktop User Menu */
+.header__desktop-user {
+    position: relative;
+    display: block;
+}
+
+.header__user-btn {
+    display: flex;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    gap: 12px;
+    padding: 9px 15px;
+    border-radius: 999px;
+    transition: 0.25s;
+    background: #fff;
+}
+
+.header__user-btn:hover,
+.header__user-btn:focus {
+    background: #e3ecfb;
+}
+
+.header__user-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.header__user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.header__user-name {
+    font-size: 1.5rem;
+    color: #2050aa;
+    font-weight: 500;
+}
+
+.header__user-menu {
+    position: absolute;
+    width: 200px;
+    top: 115%;
+    right: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 16px #cfd7e7;
+    z-index: 1;
+}
+
+.header__user-menu-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 11px 20px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #184081;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.header__user-menu-item:hover {
+    color: #184081;
+    background: #f0f4fb;
+}
+
+.header__user-menu-item:last-child:hover {
+    color: #e22f2f;
+}
+
+/* Desktop Navigation - Hidden on mobile */
 .header__nav {
     display: flex;
     margin-left: auto;
@@ -41,80 +246,6 @@
 .header__link:hover {
     color: #2050aa;
     border-bottom: 2px solid #2050aa;
-}
-
-.header__information {
-    position: relative;
-    margin-left: 40px;
-}
-
-.header__btn {
-    display: flex;
-    align-items: center;
-    border: none;
-    cursor: pointer;
-    gap: 12px;
-    padding: 9px 15px;
-    border-radius: 999px;
-    transition: 0.25s;
-    background: #fff;
-}
-
-.header__btn:hover,
-.header__btn:focus {
-    background: #e3ecfb;
-}
-
-.header__btn:focus {
-    outline: none;
-    box-shadow: none;
-}
-
-.header__avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.header__username {
-    font-size: 1.5rem;
-    color: #2050aa;
-    font-weight: 500;
-}
-
-.header__menu {
-    position: absolute;
-    width: 200px;
-    top: 115%;
-    right: 0;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 2px 16px #cfd7e7;
-    z-index: 1;
-}
-
-.header__menu-item {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 11px 20px;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #184081;
-    cursor: pointer;
-    transition: 0.25s;
-}
-
-.header__menu-item:hover {
-    color: #184081;
-    background: #f0f4fb;
-}
-
-.header__menu-item:last-child:hover {
-    color: #e22f2f;
 }
 
 .profile-modal-overlay {
@@ -154,4 +285,227 @@
     height: 80px;
     border-radius: 50%;
     margin-bottom: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .header {
+        padding: 8px 30px;
+    }
+
+    .header__logo {
+        width: 130px;
+    }
+
+    .header__nav {
+        gap: 20px;
+    }
+
+    .header__link {
+        font-size: 1.4rem;
+        padding: 6px 10px;
+    }
+
+    .header__desktop-user {
+        margin-left: 30px;
+    }
+
+    .header__user-name {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .header {
+        padding: 6px 20px;
+    }
+
+    .header__logo {
+        width: 120px;
+    }
+
+    .header__nav {
+        gap: 16px;
+    }
+
+    .header__link {
+        font-size: 1.3rem;
+        padding: 5px 8px;
+    }
+
+    .header__information {
+        margin-left: 20px;
+    }
+
+    .header__btn {
+        gap: 8px;
+        padding: 6px 12px;
+    }
+
+    .header__avatar {
+        width: 30px;
+        height: 30px;
+    }
+
+    .header__username {
+        font-size: 1.3rem;
+    }
+
+    .header__menu {
+        width: 180px;
+    }
+
+    .header__menu-item {
+        font-size: 1.3rem;
+        padding: 10px 18px;
+    }
+
+    .dashboard__sort-icon {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 5px 15px;
+    }
+
+    .header__logo {
+        width: 120px;
+    }
+
+    /* Show hamburger menu on mobile */
+    .header__hamburger {
+        display: flex;
+    }
+
+    /* Hide desktop navigation on mobile */
+    .header__nav {
+        display: none;
+    }
+
+    /* Hide desktop user menu on mobile */
+    .header__desktop-user {
+        display: none;
+    }
+
+    /* Show mobile overlay when menu is open */
+    .header__mobile-overlay {
+        display: block;
+    }
+
+    .header__mobile-overlay.show {
+        display: block;
+    }
+
+    .header__mobile-overlay.show .header__mobile-nav {
+        transform: translateX(0);
+    }
+
+    .profile-modal {
+        min-width: 280px;
+        padding: 1.5rem;
+    }
+
+    .profile-modal__avatar {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+@media (max-width: 600px) {
+    .header {
+        padding: 4px 12px;
+    }
+
+    .header__logo {
+        width: 100px;
+    }
+
+    .header__mobile-nav {
+        width: 260px;
+    }
+
+    .header__mobile-link {
+        font-size: 1.3rem;
+        padding: 12px 18px;
+    }
+
+    .profile-modal {
+        min-width: 250px;
+        padding: 1.2rem;
+        margin: 10px;
+    }
+
+    .profile-modal__avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .profile-modal__close {
+        font-size: 1.3rem;
+        top: 6px;
+        right: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 3px 10px;
+    }
+
+    .header__logo {
+        width: 80px;
+    }
+
+    .header__mobile-nav {
+        width: 240px;
+    }
+
+    .header__mobile-link {
+        font-size: 1.2rem;
+        padding: 10px 16px;
+    }
+
+    .profile-modal {
+        min-width: 220px;
+        padding: 1rem;
+        margin: 5px;
+    }
+
+    .profile-modal__avatar {
+        width: 50px;
+        height: 50px;
+    }
+
+    .profile-modal__close {
+        font-size: 1.2rem;
+        top: 4px;
+        right: 8px;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (max-width: 600px) {
+    .header__hamburger {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .header__mobile-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .header {
+        padding: 3px 15px;
+    }
+
+    .header__logo {
+        width: 85px;
+    }
 }
